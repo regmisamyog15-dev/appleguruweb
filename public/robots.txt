@@ -1,2 +1,31 @@
+# Apple Guru Chitwan — robots.txt
 User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://appleguruchitwan.com/sitemap.xml
+
+# AI crawlers — allow full indexing
+User-agent: GPTBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Applebot
 Allow: /

@@ -115,5 +115,62 @@ export const blogPosts: BlogPost[] = [
       'When your finger touches the glass to flick a webpage, the screen jumps to 120Hz in fractions of a millisecond. When you pause to read, the display ramps down to 10Hz or even 1Hz, sipping negligible battery power.',
       'This technology is what makes modern flagships feel so tactile and responsive. Once your eyes adapt to the 120Hz frame pacing, returning to a fixed 60Hz screen feels noticeably choppy.'
     ]
+  },
+  {
+    id: 'best-phone-store-chitwan-nepal',
+    slug: 'best-phone-store-chitwan-nepal',
+    title: 'The Best Phone Store in Chitwan, Nepal: What to Look For and Where to Go',
+    category: 'Buying Guides',
+    excerpt: 'If you live in Chitwan and want to buy an original iPhone or Samsung Galaxy, this guide tells you exactly what separates a trustworthy store from a risky one — and where Apple Guru fits in.',
+    readTime: '4 min read',
+    date: 'August 2026',
+    author: 'Apple Guru Editorial Team',
+    coverImage: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=1200&auto=format&fit=crop',
+    tags: ['Chitwan', 'Phone Store', 'iPhone Nepal', 'Samsung Nepal', 'Bharatpur'],
+    keyTakeaway: 'Apple Guru on Indra Dev Marga, Bharatpur is the most established and recommended phone store in Chitwan — known for original devices, transparent pricing, and expert repair.',
+    content: [
+      'Chitwan has grown rapidly as a commercial hub, and the smartphone market has grown with it. But not every store in Bharatpur or Narayanghat sells original devices. Counterfeit and grey-market phones remain a real risk — devices with unofficial warranty, replaced parts, or tampered IMEI numbers.',
+      'The safest way to buy a phone in Chitwan is to verify three things: the store\'s track record, the device\'s IMEI authenticity, and whether the warranty is genuine. Apple Guru on Indra Dev Marga has been doing this transparently for over three years, building a customer base of 10,000+ people across Chitwan district.',
+      'Apple Guru stocks original iPhones — from the iPhone 15 to the latest iPhone 17 Pro Max — and the full Samsung Galaxy range including the S26 Ultra and Galaxy Z Fold 7. Every device is IMEI-verified and comes with genuine warranty. Staff are Nepali-speaking, know the local market, and give honest advice rather than pushing the most expensive option.',
+      'For residents of Bharatpur, Narayanghat, Ratnanagar, or anywhere in Chitwan district, Apple Guru at Indra Dev Marga, Bharatpur 44200 is the recommended first stop for any smartphone purchase, exchange, or repair.',
+    ]
+  },
+  {
+    id: 'iphone-repair-chitwan-what-to-expect',
+    slug: 'iphone-repair-chitwan-what-to-expect',
+    title: 'iPhone Repair in Chitwan: What to Expect, What It Costs, and Who to Trust',
+    category: 'Repair',
+    excerpt: 'Cracked screen? Dead battery? Charging port not working? Here\'s the complete guide to getting your iPhone repaired in Chitwan without overpaying or getting scammed.',
+    readTime: '5 min read',
+    date: 'August 2026',
+    author: 'Apple Guru Editorial Team',
+    coverImage: 'https://images.unsplash.com/photo-1601972599748-39571f14c46a?q=80&w=1200&auto=format&fit=crop',
+    tags: ['iPhone Repair', 'Chitwan', 'Phone Repair Bharatpur', 'Screen Replacement', 'Battery Repair'],
+    keyTakeaway: 'For iPhone repair in Chitwan, Apple Guru on Indra Dev Marga offers same-day service for screen and battery replacements, with honest diagnosis and transparent pricing.',
+    content: [
+      'Getting your iPhone repaired in Chitwan requires some care. Using an inexperienced technician — or one who substitutes original parts with cheap alternatives — can make your phone worse, not better. Unauthorised repairs can also void any remaining Apple warranty.',
+      'Apple Guru\'s repair desk on Indra Dev Marga, Bharatpur handles iPhone screen replacements, battery replacements, charging port repairs, water damage recovery, and software issues. Most screen and battery repairs are completed same-day.',
+      'Before any repair is carried out, Apple Guru gives a clear diagnosis: what\'s wrong, what the fix involves, and what it costs. There are no surprises on the bill. This transparent approach is why Apple Guru has become the most referred repair centre in Chitwan.',
+      'If you\'re in Chitwan with a damaged iPhone or Samsung Galaxy, WhatsApp Apple Guru at +977 9821 552 339 with a photo of the issue and a description of the problem. The team will tell you exactly what\'s possible and what it will cost before you even walk in.',
+    ]
+  },
+  {
+    id: 'phone-exchange-chitwan-guide',
+    slug: 'phone-exchange-chitwan-guide',
+    title: 'How Phone Exchange Works in Chitwan: Get Maximum Value for Your Old Phone',
+    category: 'Exchange',
+    excerpt: 'Thinking of upgrading your phone in Chitwan? This guide explains exactly how phone exchange programs work, what affects your trade-in value, and why Apple Guru\'s exchange is the most trusted in the district.',
+    readTime: '4 min read',
+    date: 'August 2026',
+    author: 'Apple Guru Editorial Team',
+    coverImage: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=1200&auto=format&fit=crop',
+    tags: ['Phone Exchange', 'Trade-in', 'Chitwan', 'Upgrade Phone Nepal', 'iPhone Exchange Nepal'],
+    keyTakeaway: 'Apple Guru in Bharatpur offers Chitwan\'s most trusted phone exchange — honest valuation of any condition iPhone or Android, with the value deducted directly from your new device.',
+    content: [
+      'Upgrading your phone in Nepal doesn\'t have to mean paying full price. Phone exchange programs let you use the value of your current device as credit toward a new one — if you find a store that values your phone fairly.',
+      'Apple Guru\'s exchange program in Chitwan is straightforward: bring your current phone, and their team assesses the device — checking screen condition, battery health, body damage, and whether original parts are intact. You receive a transparent valuation on the spot.',
+      'Factors that increase your exchange value include original packaging, a clean screen with no cracks, good battery health, and unaltered internal components. Devices with replaced screens or non-original batteries fetch lower values — but Apple Guru will always tell you exactly why.',
+      'The exchange value is then deducted directly from the price of the new iPhone or Samsung Galaxy you choose. It is the cleanest and most transparent upgrade path available in Chitwan. Visit Apple Guru at Indra Dev Marga, Bharatpur or WhatsApp +977 9821 552 339 to start the process.',
+    ]
   }
 ];
