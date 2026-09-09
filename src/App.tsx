@@ -283,7 +283,7 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
   const [paused,  setPaused]  = useState(false);
   const [playing, setPlaying] = useState(true);
   const touchX = useRef<number|null>(null);
-  const DURATION = 6500;
+  const DURATION = 3000;
   const s = slides[idx];
 
   useEffect(() => {
@@ -313,19 +313,20 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
         touchX.current=null;
       }}
     >
-      {/* BG image */}
+      {/* BG image — pinned to the RIGHT half, high opacity */}
       <img
         key={`bg-${idx}`}
         src={s.img}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
-        style={{ opacity:.32 }}
+        className="absolute top-0 right-0 h-full transition-opacity duration-500"
+        style={{ width:'62%', objectFit:'cover', objectPosition:'center', opacity:.72 }}
       />
-      {/* Gradients */}
-      <div className="absolute inset-0" style={{ background:'linear-gradient(90deg,var(--bg) 40%,transparent)' }} />
-      <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),transparent 55%)' }} />
-      {/* Blue glow */}
-      <div className="blue-glow" style={{ width:500, height:500, top:'10%', right:'5%', opacity:.18 }} />
+      {/* Strong left-to-right gradient so text stays crisp */}
+      <div className="absolute inset-0" style={{ background:'linear-gradient(90deg,var(--bg) 38%,rgba(10,10,18,.55) 62%,transparent 100%)' }} />
+      {/* Bottom fade */}
+      <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg) 0%,transparent 40%)' }} />
+      {/* Blue glow accent */}
+      <div className="blue-glow" style={{ width:420, height:420, top:'15%', right:'30%', opacity:.22 }} />
 
       {/* Content */}
       <div className="relative mx-auto flex flex-col justify-between px-5 md:px-12 max-w-[1440px]"
@@ -372,44 +373,58 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
 
         {/* Controls */}
         <div>
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
               {[
-                { icon:<ArrowLeft size={13}/>, fn:()=>jump(idx-1), label:'Prev' },
-                { icon:<ArrowRight size={13}/>, fn:()=>jump(idx+1), label:'Next' },
-                { icon: playing ? <Pause size={12}/> : <Play size={12}/>, fn:()=>setPlaying(v=>!v), label:'Toggle' },
+                { icon:<ArrowLeft size={16}/>, fn:()=>jump(idx-1), label:'Prev' },
+                { icon:<ArrowRight size={16}/>, fn:()=>jump(idx+1), label:'Next' },
+                { icon: playing ? <Pause size={14}/> : <Play size={14}/>, fn:()=>setPlaying(v=>!v), label:playing?'Pause':'Play' },
               ].map(({ icon, fn, label }) => (
                 <button
                   key={label}
                   onClick={fn}
                   aria-label={label}
-                  className="grid h-9 w-9 place-items-center rounded-full transition-all"
-                  style={{ border:'1px solid var(--border-hover)', color:'var(--text-muted)' }}
-                  onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)';(e.currentTarget as HTMLElement).style.color='var(--blue-bright)';}}
-                  onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.borderColor='var(--border-hover)';(e.currentTarget as HTMLElement).style.color='var(--text-muted)';}}
+                  title={label}
+                  className="grid place-items-center rounded-full transition-all duration-150"
+                  style={{
+                    width:42, height:42,
+                    background:'rgba(255,255,255,.12)',
+                    border:'1.5px solid rgba(255,255,255,.25)',
+                    color:'#fff',
+                    backdropFilter:'blur(8px)',
+                  }}
+                  onMouseEnter={e=>{
+                    (e.currentTarget as HTMLElement).style.background='var(--blue)';
+                    (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)';
+                  }}
+                  onMouseLeave={e=>{
+                    (e.currentTarget as HTMLElement).style.background='rgba(255,255,255,.12)';
+                    (e.currentTarget as HTMLElement).style.borderColor='rgba(255,255,255,.25)';
+                  }}
                 >
                   {icon}
                 </button>
               ))}
             </div>
-            <span className="text-[11px] tracking-wider" style={{ color:'var(--text-muted)' }}>
+            <span className="rounded-full px-3 py-1 text-[12px] font-semibold tracking-wider" style={{ background:'rgba(255,255,255,.1)', color:'rgba(255,255,255,.7)', backdropFilter:'blur(8px)' }}>
               {String(idx+1).padStart(2,'0')} / {String(slides.length).padStart(2,'0')}
             </span>
           </div>
-          {/* Progress scrubbers */}
-          <div className="flex gap-1.5">
+          {/* Progress scrubbers — thicker and more visible */}
+          <div className="flex gap-2">
             {slides.map((slide,i) => (
               <button
                 key={slide.tag}
                 onClick={() => jump(i)}
-                className="relative h-0.5 flex-1 overflow-hidden rounded-full"
-                style={{ background:'var(--border-hover)' }}
+                className="relative h-1 flex-1 overflow-hidden rounded-full"
+                style={{ background:'rgba(255,255,255,.18)' }}
               >
                 <span
-                  className="absolute left-0 top-0 h-full rounded-full transition-all"
+                  className="absolute left-0 top-0 h-full rounded-full"
                   style={{
                     background:'var(--blue-bright)',
-                    width: i===idx ? `${prog}%` : i<idx ? '100%' : '0%'
+                    width: i===idx ? `${prog}%` : i<idx ? '100%' : '0%',
+                    transition: i===idx ? 'none' : 'width .2s',
                   }}
                 />
               </button>
