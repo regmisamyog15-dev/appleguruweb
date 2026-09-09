@@ -43,7 +43,7 @@ export const products: Product[] = [
     priceRange: 'Rs. 92K – 1.15 Lakh',
     featured: true,
     editorialHighlight: 'Everyday favourite',
-    image: '/assets/user/giphy_1788777324769.webp',
+    image: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=1200&auto=format&fit=crop',
     colors: [{ name: 'Blue', hex: '#6b9de6' }, { name: 'Black', hex: '#181d28' }],
     keySpecs: ['6.1-inch Super Retina XDR display', 'A16 Bionic chip', '48MP main camera', 'USB-C connector'],
     stockStatus: 'In Stock at Showroom',

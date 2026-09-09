@@ -1,9 +1,11 @@
-import { type ReactNode, useEffect, useMemo, useState, useRef, type TouchEvent } from 'react';
+import {
+  type ReactNode, useEffect, useMemo, useState, useRef, type TouchEvent
+} from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
-  ArrowRight, ArrowUpRight, Check, ChevronDown, CircleHelp, FileText,
-  MapPin, Menu, MessageCircle, Minus, Phone, Plus, Search, X, Wrench,
-  Smartphone, Navigation, Clock3, RefreshCw, Pause, Play, ArrowLeft,
+  ArrowRight, ArrowUpRight, ArrowLeft, Check, ChevronDown, CircleHelp,
+  FileText, MapPin, Menu, MessageCircle, Minus, Phone, Plus, Search,
+  X, Wrench, Smartphone, Navigation, Clock3, RefreshCw, Pause, Play,
   Sparkles, Watch
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -13,181 +15,176 @@ import { blogPosts } from './data/blogPosts';
 import { products, priceDisclaimer } from './data/products';
 import { repairServices } from './data/repairServices';
 import type { BlogPost, PageView, Product } from './types';
-import iphone15Pro from '../reference/assets/iphone15-pro.png';
-import iphone14Pro from '../reference/assets/iphone14-pro.png';
+import iphone15Pro    from '../reference/assets/iphone15-pro.png';
+import iphone14Pro    from '../reference/assets/iphone14-pro.png';
 import iphone15ProMax from '../reference/assets/iphone15-pro-max.png';
-import galaxyS24 from '../reference/assets/galaxy-s24-ultra.png';
-import galaxyFold from '../reference/assets/galaxy-fold5.png';
-import showroomDay from '../reference/assets/showroom-day.png';
-import showroomNight from '../reference/assets/showroom-night.png';
+import galaxyS24      from '../reference/assets/galaxy-s24-ultra.png';
+import galaxyFold     from '../reference/assets/galaxy-fold5.png';
+import showroomDay    from '../reference/assets/showroom-day.png';
+import showroomNight  from '../reference/assets/showroom-night.png';
 import { Router as WouterRouter, useLocation } from 'wouter';
 
-// ─── uploaded reference images ────────────────────────────────────────────────
-// Image 1: apple-ecosystem flat lay (white devices on grey)
-const imgEcosystem = '/assets/stitch/ultra_premium_photorealistic_product_campaign_featuring_the_iphone_17_pro_max..png';
-// Image 3: Mac Mini
-const imgMacMini = '/assets/stitch/authentic_professional_commercial_lifestyle_photography_inside_a_modern_premium.png';
-// Repair
-const imgRepairScene = '/assets/stitch/ultra_photorealistic_premium_smartphone_repair_workshop_scene._a_modern.png';
-// Exchange
+// ── Reference stitch assets ─────────────────────────────────────────────────
+const imgHero1    = '/assets/stitch/ultra_premium_photorealistic_product_campaign_featuring_the_iphone_17_pro_max..png';
+const imgHero2    = '/assets/stitch/ultra_premium_photorealistic_product_advertisement_for_the_samsung_galaxy_s26.png';
+const imgHero3    = '/assets/stitch/premium_photorealistic_product_photograph_of_the_samsung_galaxy_z_fold7._one.png';
+const imgRepair   = '/assets/stitch/ultra_photorealistic_premium_smartphone_repair_workshop_scene._a_modern.png';
 const imgExchange = '/assets/stitch/premium_photorealistic_product_campaign_comparing_two_phone_states_side_by.png';
-// Samsung fold
-const imgFold = '/assets/stitch/premium_photorealistic_product_photograph_of_the_samsung_galaxy_z_fold7._one.png';
-// Accessories
-const imgAccessory = '/assets/stitch/premium_editorial_product_photograph_of_a_modern_smartphone_accessory.png';
-// Showroom interior
-const imgShowroomInt = '/assets/stitch/realistic_premium_technology_retail_showroom_interior_in_chitwan_nepal_for.png';
-// User photos
-const imgUser1 = '/assets/user/200_1788777310239.webp';
-const imgUser2 = '/assets/user/200_1788777343556.webp';
-const imgUser3 = '/assets/user/200_1788777333446.webp';
-const imgUser4 = '/assets/user/200_1788777354019.webp';
-const imgUser5 = '/assets/user/200_1788777460813.webp';
-// Logo / favicon
-const logoSrc = '/images/favicon.png';
+const imgUser1    = '/assets/user/200_1788777310239.webp';
+const imgUser2    = '/assets/user/200_1788777333446.webp';
+const imgUser3    = '/assets/user/200_1788777343556.webp';
+const imgUser4    = '/assets/user/200_1788777354019.webp';
+const imgUser5    = '/assets/user/200_1788777460813.webp';
+const logoSrc     = '/images/favicon.png';
 
-const queryClient = new QueryClient();
-const whatsappNumber = '9779821552339';
-const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=Apple+Guru,+Indra+dev+Hall,+Bharatpur+44200';
+const queryClient  = new QueryClient();
+const WHATSAPP_NUM = '9779821552339';
+const MAPS_URL     = 'https://www.google.com/maps/search/?api=1&query=Apple+Guru,+Indra+dev+Hall,+Bharatpur+44200';
 
 const navItems: { id: PageView; label: string }[] = [
-  { id: 'home', label: 'Home' },
-  { id: 'phones', label: 'Phones' },
+  { id: 'home',     label: 'Home'     },
+  { id: 'phones',   label: 'Phones'   },
   { id: 'exchange', label: 'Exchange' },
-  { id: 'repair', label: 'Repair' },
-  { id: 'insights', label: 'Journal' },
+  { id: 'repair',   label: 'Repair'   },
+  { id: 'insights', label: 'Journal'  },
   { id: 'showroom', label: 'Showroom' },
 ];
 
+// per-product image overrides (use real photos where we have them)
 const localImages: Record<string, string> = {
-  'iphone-15-pro': iphone15Pro,
+  'iphone-15-pro':     iphone15Pro,
   'iphone-14-pro-max': iphone14Pro,
   'iphone-15-pro-max': iphone15ProMax,
-  'galaxy-s24-ultra': galaxyS24,
-  'galaxy-z-fold-6': galaxyFold,
-  'iphone-16-pro-max': imgEcosystem,
-  'iphone-16-pro': imgEcosystem,
-  'galaxy-s25-ultra': '/assets/stitch/ultra_premium_photorealistic_product_advertisement_for_the_samsung_galaxy_s26.png',
-  'galaxy-z-flip-6': imgFold,
+  'galaxy-s24-ultra':  galaxyS24,
+  'galaxy-z-fold-6':   galaxyFold,
 };
 
-function openWhatsApp(message: string) {
-  window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+function wa(msg: string) {
+  window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
 }
+function imgFor(p: Product) { return localImages[p.id] ?? p.image; }
 
-// ─── Shared primitives ─────────────────────────────────────────────────────────
+// ── Primitives ───────────────────────────────────────────────────────────────
 function Btn({
-  children, onClick, variant = 'gold', className = '', type = 'button'
+  children, onClick, variant = 'primary', className = '', type = 'button'
 }: {
   children: ReactNode; onClick?: () => void;
-  variant?: 'gold' | 'outline' | 'dark'; className?: string; type?: 'button' | 'submit';
+  variant?: 'primary' | 'outline' | 'gold'; className?: string; type?: 'button'|'submit';
 }) {
-  const base = 'inline-flex items-center justify-center gap-2 font-sans font-semibold text-[13px] tracking-wide transition-all duration-200 cursor-pointer rounded-full px-6 min-h-[44px]';
-  const v = variant === 'gold'
-    ? 'bg-[#c9a84c] text-[#0a0a0a] hover:bg-[#d4b560]'
-    : variant === 'outline'
-    ? 'border border-[rgba(255,255,255,.15)] text-[#f0ebe3] hover:border-[#c9a84c] hover:text-[#c9a84c]'
-    : 'bg-[#1a1a1a] text-[#f0ebe3] border border-[#2a2a2a] hover:border-[#c9a84c]';
-  return <button type={type} onClick={onClick} className={`${base} ${v} ${className}`}>{children}</button>;
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      className={`btn btn-${variant} ${className}`}
+    >
+      {children}
+    </button>
+  );
 }
 
-function Logo({ size = 28 }: { size?: number }) {
+function Logo() {
   return (
     <div className="flex items-center gap-2.5">
-      <img src={logoSrc} alt="Apple Guru" style={{ width: size, height: size }} className="rounded-sm" />
-      <span style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: 18, letterSpacing: '-.02em', color: '#f0ebe3' }}>
+      <img src={logoSrc} alt="Apple Guru" className="w-7 h-7 rounded-md" />
+      <span style={{ fontFamily:"'DM Serif Display',Georgia,serif", fontSize:17, letterSpacing:'-.02em', color:'var(--text-primary)' }}>
         Apple Guru
       </span>
     </div>
   );
 }
 
-function DevanagariBar() {
-  return (
-    <div className="deva-bar w-full border-b border-[#1a1a1a] bg-[#0a0a0a] py-2 text-center">
-      चितवनको सर्वोत्तम Apple र Samsung स्टोर — Indra Dev Marga, Bharatpur
-    </div>
-  );
-}
-
-// ─── Header ───────────────────────────────────────────────────────────────────
-function Header({ currentPage, onNavigate, onSearch }: {
-  currentPage: PageView; onNavigate: (p: PageView) => void; onSearch: () => void;
+// ── Header ───────────────────────────────────────────────────────────────────
+function Header({ page, goto, openSearch }: {
+  page: PageView; goto: (p: PageView) => void; openSearch: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled,  setScrolled]  = useState(false);
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handler);
-    return () => window.removeEventListener('scroll', handler);
+    const h = () => setScrolled(window.scrollY > 16);
+    window.addEventListener('scroll', h, { passive: true });
+    return () => window.removeEventListener('scroll', h);
   }, []);
-  const go = (page: PageView) => { setOpen(false); onNavigate(page); };
+  const go = (p: PageView) => { setMenuOpen(false); goto(p); };
+
   return (
     <>
-      <DevanagariBar />
+      {/* Devanagari micro-bar */}
+      <div className="w-full border-b deva-bar text-center py-1.5" style={{ borderColor:'var(--border)', background:'var(--bg)' }}>
+        चितवनको सर्वोत्तम Apple र Samsung स्टोर — Indra Dev Marga, Bharatpur
+      </div>
+
       <header
         className="sticky top-0 z-40 transition-all duration-300"
-        style={{ background: scrolled ? 'rgba(10,10,10,.95)' : 'rgba(10,10,10,.8)', backdropFilter: 'blur(20px)', borderBottom: '1px solid #1a1a1a' }}
+        style={{
+          background: scrolled ? 'rgba(10,10,18,.97)' : 'rgba(10,10,18,.85)',
+          backdropFilter: 'blur(20px)',
+          borderBottom: '1px solid var(--border)'
+        }}
       >
         <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 md:px-12">
-          {/* Logo */}
-          <button onClick={() => go('home')} aria-label="Apple Guru home">
-            <Logo />
-          </button>
+          <button onClick={() => go('home')}><Logo /></button>
 
-          {/* Nav pills — desktop */}
-          <nav className="hidden items-center gap-1.5 md:flex" aria-label="Primary navigation">
-            {navItems.map((item) => (
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-1 md:flex">
+            {navItems.map(item => (
               <button
                 key={item.id}
                 onClick={() => go(item.id)}
-                className={`nav-pill ${currentPage === item.id ? 'active' : ''}`}
+                className={`nav-pill ${page === item.id ? 'active' : ''}`}
               >
                 {item.label}
               </button>
             ))}
           </nav>
 
-          {/* Right actions */}
-          <div className="flex items-center gap-3">
+          {/* Right controls */}
+          <div className="flex items-center gap-2">
             <button
-              onClick={onSearch}
-              aria-label="Search"
-              className="hidden items-center gap-2 rounded-full border border-[#222] px-4 py-2 text-[13px] text-[#8a7f72] hover:border-[#c9a84c] hover:text-[#c9a84c] md:flex transition-all"
+              onClick={openSearch}
+              className="hidden md:flex items-center gap-2 rounded-full px-4 py-2 text-[13px] transition-all"
+              style={{ border:'1px solid var(--border)', color:'var(--text-secondary)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)'; (e.currentTarget as HTMLElement).style.color='var(--blue-bright)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'; }}
             >
-              <Search size={15} /> Search
-              <kbd className="ml-1 rounded border border-[#333] px-1.5 py-0.5 text-[10px]">⌘K</kbd>
+              <Search size={14} /> Search
+              <kbd className="ml-1 rounded px-1.5 py-0.5 text-[10px]" style={{ border:'1px solid var(--border-hover)', color:'var(--text-muted)' }}>⌘K</kbd>
             </button>
+
             <a
               href="tel:9821552339"
-              className="hidden items-center gap-1.5 rounded-full border border-[#222] px-4 py-2 text-[13px] text-[#8a7f72] hover:border-[#c9a84c] hover:text-[#c9a84c] md:flex transition-all"
+              className="hidden md:flex items-center gap-1.5 rounded-full px-4 py-2 text-[13px] transition-all"
+              style={{ border:'1px solid var(--border)', color:'var(--text-secondary)' }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)'; (e.currentTarget as HTMLElement).style.color='var(--blue-bright)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'; }}
             >
-              <Phone size={14} /> Call
+              <Phone size={13} /> Call
             </a>
+
             <button
-              onClick={() => setOpen(!open)}
-              className="text-[#f0ebe3] md:hidden"
-              aria-label={open ? 'Close menu' : 'Open menu'}
+              className="md:hidden"
+              style={{ color:'var(--text-primary)' }}
+              onClick={() => setMenuOpen(v => !v)}
             >
-              {open ? <X size={22} /> : <Menu size={22} />}
+              {menuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
 
         {/* Mobile menu */}
-        {open && (
-          <div className="border-t border-[#1a1a1a] bg-[#0a0a0a] px-5 pb-6 pt-3 md:hidden page-reveal">
-            {navItems.map((item) => (
+        {menuOpen && (
+          <div className="page-reveal border-t px-5 pb-6 pt-3 md:hidden" style={{ borderColor:'var(--border)', background:'var(--bg)' }}>
+            {navItems.map(item => (
               <button
                 key={item.id}
                 onClick={() => go(item.id)}
-                className={`flex w-full items-center justify-between border-b border-[#1a1a1a] py-4 text-left text-[15px] ${currentPage === item.id ? 'text-[#c9a84c]' : 'text-[#f0ebe3]'}`}
+                className="flex w-full items-center justify-between border-b py-4 text-left text-[15px]"
+                style={{ borderColor:'var(--border)', color: page===item.id ? 'var(--blue-bright)' : 'var(--text-primary)' }}
               >
-                {item.label} <ArrowUpRight size={15} className="text-[#8a7f72]" />
+                {item.label} <ArrowUpRight size={14} style={{ color:'var(--text-muted)' }} />
               </button>
             ))}
-            <a href="tel:9821552339" className="mt-5 flex items-center gap-2 text-[13px] text-[#8a7f72]">
-              <Phone size={14} /> +977 9821 552 339
+            <a href="tel:9821552339" className="mt-5 flex items-center gap-2 text-[13px]" style={{ color:'var(--text-muted)' }}>
+              <Phone size={13} /> +977 9821 552 339
             </a>
           </div>
         )}
@@ -196,141 +193,179 @@ function Header({ currentPage, onNavigate, onSearch }: {
   );
 }
 
-// ─── Bottom Nav (mobile) ───────────────────────────────────────────────────────
+// ── Bottom nav (mobile) ───────────────────────────────────────────────────────
 function BottomNav() {
   return (
-    <nav className="fixed bottom-0 z-40 grid h-14 w-full grid-cols-2 border-t border-[#1a1a1a] bg-[#0a0a0a]/95 backdrop-blur-md md:hidden">
-      <a href="tel:9821552339" className="flex flex-col items-center justify-center gap-1 text-[#8a7f72] hover:text-[#c9a84c] transition-colors">
-        <Phone size={15} />
-        <span className="text-[10px] font-medium">Call Us</span>
-      </a>
-      <a href={mapsUrl} target="_blank" rel="noreferrer" className="flex flex-col items-center justify-center gap-1 text-[#8a7f72] hover:text-[#c9a84c] transition-colors">
-        <Navigation size={15} />
-        <span className="text-[10px] font-medium">Directions</span>
-      </a>
+    <nav
+      className="fixed bottom-0 z-40 grid h-14 w-full grid-cols-2 border-t md:hidden"
+      style={{ background:'rgba(10,10,18,.97)', backdropFilter:'blur(16px)', borderColor:'var(--border)' }}
+    >
+      {[
+        { href:'tel:9821552339', icon:<Phone size={15}/>, label:'Call Us' },
+        { href:MAPS_URL, icon:<Navigation size={15}/>, label:'Directions' }
+      ].map(({ href, icon, label }) => (
+        <a
+          key={label}
+          href={href}
+          target={href.startsWith('http') ? '_blank' : undefined}
+          rel="noreferrer"
+          className="flex flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors"
+          style={{ color:'var(--text-secondary)' }}
+          onMouseEnter={e => (e.currentTarget as HTMLElement).style.color='var(--blue-bright)'}
+          onMouseLeave={e => (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'}
+        >
+          {icon}{label}
+        </a>
+      ))}
     </nav>
   );
 }
 
-// ─── Campaign Hero ─────────────────────────────────────────────────────────────
-type Campaign = {
-  eyebrow: string; title: string; titleAccent: string;
-  body: string; cta: string; icon: typeof Smartphone;
-  media: string; action: 'phones' | 'exchange' | 'repair' | 'showroom';
+// ── Ticker bar ────────────────────────────────────────────────────────────────
+function Ticker() {
+  const items = [
+    'Original Apple Devices','Samsung Galaxy S26 Ultra','Galaxy Z Fold 7',
+    'iPhone 17 Pro Max','Same-Day Repair','Phone Exchange',
+    'Genuine Warranty','Chitwan Tech Store','iPhone Air'
+  ];
+  const doubled = [...items,...items];
+  return (
+    <div className="overflow-hidden border-y py-3" style={{ borderColor:'var(--border)', background:'var(--bg-card)' }}>
+      <div className="ticker-track">
+        {doubled.map((t,i) => (
+          <span key={i} className="flex items-center gap-5 px-5 text-[11.5px] font-medium tracking-[.09em] uppercase" style={{ color:'var(--text-muted)' }}>
+            <span className="h-1 w-1 rounded-full shrink-0" style={{ background:'var(--blue)' }} />
+            {t}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Campaign Hero ─────────────────────────────────────────────────────────────
+type Slide = {
+  tag: string; title: string; accent: string;
+  body: string; cta: string; img: string;
+  action: 'phones'|'exchange'|'repair'|'showroom';
 };
-const campaigns: Campaign[] = [
+const slides: Slide[] = [
   {
-    eyebrow: 'iPhone', title: 'The one you', titleAccent: 'have been waiting for.',
-    body: 'Original iPhones. Genuine warranty. Expert guidance — all at one address in Chitwan.',
-    cta: 'Explore iPhones', icon: Smartphone, media: imgUser1, action: 'phones'
+    tag:'iPhone 17 Series', title:'The new Pro Max.', accent:'Titanium. Intelligence.',
+    body:'Original iPhones with genuine warranty. Expert guidance at Chitwan\'s most trusted store.',
+    cta:'Explore iPhones', img: imgHero1, action:'phones'
   },
   {
-    eyebrow: 'Samsung Galaxy', title: 'Fold it. Flip it.', titleAccent: 'Own it.',
-    body: 'The full Galaxy range — from the ultra-slim S26 to the Fold 7 — in stock at the showroom.',
-    cta: 'See Galaxy', icon: Sparkles, media: imgFold, action: 'phones'
+    tag:'Samsung Galaxy S26 Ultra', title:'Galaxy at its peak.', accent:'Engineered to exceed.',
+    body:'The full Galaxy lineup — from S26 Ultra to Z Fold 7 — in stock at our showroom.',
+    cta:'See Galaxy', img: imgHero2, action:'phones'
   },
   {
-    eyebrow: 'Exchange', title: 'Your old phone', titleAccent: 'still has a price.',
-    body: 'Bring it in. We assess it honestly. The value comes off your next device — simple.',
-    cta: 'Start exchange', icon: RefreshCw, media: imgExchange, action: 'exchange'
+    tag:'Galaxy Z Fold 7', title:'Unfold a bigger world.', accent:'Fold. Work. Create.',
+    body:'The most capable foldable yet. Try it in your hands at Apple Guru Chitwan.',
+    cta:'View Foldables', img: imgHero3, action:'phones'
   },
   {
-    eyebrow: 'Repair', title: 'Broken screen?', titleAccent: "We've seen worse.",
-    body: 'Screen, battery, charging port — precision work by technicians who stay with the problem.',
-    cta: 'Book a repair', icon: Wrench, media: imgRepairScene, action: 'repair'
+    tag:'Phone Exchange', title:'Your old phone has value.', accent:'Put it to work.',
+    body:'Bring it in. We assess it honestly. The amount comes straight off your next device.',
+    cta:'Start exchange', img: imgExchange, action:'exchange'
   },
   {
-    eyebrow: 'Accessories', title: 'Finish your', titleAccent: 'setup.',
-    body: 'Watch bands, cases, earbuds, and cables. The small things that make the difference.',
-    cta: 'Visit showroom', icon: Watch, media: imgUser2, action: 'showroom'
+    tag:'Repair', title:'Broken screen?', accent:"We've fixed worse.",
+    body:'Screen, battery, charging port — diagnosed and repaired by technicians who care.',
+    cta:'Book a repair', img: imgRepair, action:'repair'
   },
 ];
 
-function CampaignHero({ onNavigate }: { onNavigate: (p: PageView) => void }) {
-  const [active, setActive] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [paused, setPaused] = useState(false);
+function Hero({ goto }: { goto: (p: PageView) => void }) {
+  const [idx,     setIdx]     = useState(0);
+  const [prog,    setProg]    = useState(0);
+  const [paused,  setPaused]  = useState(false);
   const [playing, setPlaying] = useState(true);
-  const startX = useRef<number | null>(null);
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const touchX = useRef<number|null>(null);
   const DURATION = 6500;
-  const item = campaigns[active];
+  const s = slides[idx];
 
   useEffect(() => {
     if (!playing || paused) return;
-    const started = Date.now();
-    timer.current = setInterval(() => {
-      const pct = Math.min(100, ((Date.now() - started) / DURATION) * 100);
-      setProgress(pct);
-      if (pct >= 100) setActive((v) => (v + 1) % campaigns.length);
+    const t0 = Date.now();
+    const iv = setInterval(() => {
+      const pct = Math.min(100, ((Date.now()-t0)/DURATION)*100);
+      setProg(pct);
+      if (pct >= 100) { setIdx(v => (v+1)%slides.length); setProg(0); }
     }, 60);
-    return () => { if (timer.current) clearInterval(timer.current); };
-  }, [active, paused, playing]);
+    return () => clearInterval(iv);
+  }, [idx, paused, playing]);
 
-  const select = (i: number) => { setActive((i + campaigns.length) % campaigns.length); setProgress(0); };
-  const handleTouchStart = (e: TouchEvent) => { startX.current = e.touches[0]?.clientX ?? null; };
-  const handleTouchEnd = (e: TouchEvent) => {
-    if (startX.current === null) return;
-    const dist = (e.changedTouches[0]?.clientX ?? 0) - startX.current;
-    if (Math.abs(dist) > 40) select(active + (dist < 0 ? 1 : -1));
-    startX.current = null;
-  };
+  const jump = (i: number) => { setIdx((i+slides.length)%slides.length); setProg(0); };
 
   return (
     <section
-      className="relative min-h-[min(760px,96dvh)] overflow-hidden border-b border-[#1a1a1a] grain"
+      className="relative overflow-hidden"
+      style={{ minHeight:'min(760px,94dvh)' }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      onTouchStart={e => { touchX.current = e.touches[0]?.clientX ?? null; }}
+      onTouchEnd={e => {
+        if (touchX.current===null) return;
+        const d=(e.changedTouches[0]?.clientX??0)-touchX.current;
+        if (Math.abs(d)>40) jump(idx+(d<0?1:-1));
+        touchX.current=null;
+      }}
     >
-      {/* Background image */}
+      {/* BG image */}
       <img
-        key={`bg-${active}`}
-        src={item.media}
+        key={`bg-${idx}`}
+        src={s.img}
         alt=""
         className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
-        style={{ opacity: .38 }}
+        style={{ opacity:.32 }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/75 to-[#0a0a0a]/30" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent" />
+      {/* Gradients */}
+      <div className="absolute inset-0" style={{ background:'linear-gradient(90deg,var(--bg) 40%,transparent)' }} />
+      <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),transparent 55%)' }} />
+      {/* Blue glow */}
+      <div className="blue-glow" style={{ width:500, height:500, top:'10%', right:'5%', opacity:.18 }} />
 
       {/* Content */}
-      <div className="relative mx-auto flex min-h-[min(760px,96dvh)] max-w-[1440px] flex-col justify-between px-5 pb-10 pt-14 md:px-12 md:pb-14 md:pt-20">
-        {/* Eyebrow */}
-        <div className="flex items-center gap-3">
-          <item.icon size={14} className="text-[#c9a84c]" />
-          <span key={`ey-${active}`} className="page-reveal font-sans text-[12px] font-medium tracking-[.12em] uppercase text-[#c9a84c]">
-            {item.eyebrow}
+      <div className="relative mx-auto flex flex-col justify-between px-5 md:px-12 max-w-[1440px]"
+        style={{ minHeight:'min(760px,94dvh)', paddingTop:64, paddingBottom:40 }}>
+
+        {/* Tag */}
+        <div className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background:'var(--blue-bright)' }} />
+          <span key={`tag-${idx}`} className="page-reveal text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>
+            {s.tag}
           </span>
         </div>
 
-        {/* Main headline */}
-        <div className="max-w-3xl">
+        {/* Headline */}
+        <div style={{ maxWidth:680 }}>
           <h1
-            key={`h-${active}`}
-            className="page-reveal font-serif text-[clamp(2.8rem,7vw,6.5rem)] leading-[.95] tracking-[-0.03em] text-[#f2ede6]"
+            key={`h-${idx}`}
+            className="page-reveal font-serif"
+            style={{ fontSize:'clamp(2.8rem,6.5vw,6rem)', lineHeight:.96, letterSpacing:'-.03em', color:'var(--text-primary)' }}
           >
-            {item.title}<br />
-            <span className="text-[#c9a84c]">{item.titleAccent}</span>
+            {s.title}<br />
+            <span style={{ color:'var(--blue-bright)' }}>{s.accent}</span>
           </h1>
           <p
-            key={`p-${active}`}
-            className="page-reveal mt-6 max-w-md font-sans text-[16px] leading-7 text-[#8a7f72] md:text-[17px]"
-            style={{ animationDelay: '80ms' }}
+            key={`p-${idx}`}
+            className="page-reveal mt-6 text-[16px] leading-7"
+            style={{ maxWidth:420, color:'var(--text-secondary)', animationDelay:'80ms' }}
           >
-            {item.body}
+            {s.body}
           </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Btn onClick={() => onNavigate(item.action)} variant="gold">
-              {item.cta} <ArrowRight size={15} />
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Btn variant="primary" onClick={() => goto(s.action)}>
+              {s.cta} <ArrowRight size={15} />
             </Btn>
-            <Btn onClick={() => openWhatsApp(`Hello Apple Guru. I am interested in ${item.eyebrow}.`)} variant="outline">
-              <MessageCircle size={15} /> Ask us
+            <Btn variant="outline" onClick={() => wa(`Hello Apple Guru. I am interested in ${s.tag}.`)}>
+              <MessageCircle size={14} /> Ask us
             </Btn>
           </div>
-          <div className="mt-7 flex items-center gap-2 font-sans text-[12px] text-[#4a4540]">
-            <MapPin size={13} className="text-[#c9a84c]" />
+          <div className="mt-6 flex items-center gap-2 text-[12px]" style={{ color:'var(--text-muted)' }}>
+            <MapPin size={12} style={{ color:'var(--blue)' }} />
             Indra Dev Marga, Bharatpur · Chitwan
           </div>
         </div>
@@ -339,44 +374,43 @@ function CampaignHero({ onNavigate }: { onNavigate: (p: PageView) => void }) {
         <div>
           <div className="mb-3 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <button
-                onClick={() => select(active - 1)}
-                aria-label="Previous"
-                className="grid h-9 w-9 place-items-center rounded-full border border-[#2a2a2a] text-[#6a6a6a] hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all"
-              >
-                <ArrowLeft size={14} />
-              </button>
-              <button
-                onClick={() => select(active + 1)}
-                aria-label="Next"
-                className="grid h-9 w-9 place-items-center rounded-full border border-[#2a2a2a] text-[#6a6a6a] hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all"
-              >
-                <ArrowRight size={14} />
-              </button>
-              <button
-                onClick={() => setPlaying((v) => !v)}
-                aria-label={playing ? 'Pause' : 'Play'}
-                className="grid h-9 w-9 place-items-center rounded-full border border-[#2a2a2a] text-[#6a6a6a] hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all"
-              >
-                {playing ? <Pause size={12} /> : <Play size={12} />}
-              </button>
+              {[
+                { icon:<ArrowLeft size={13}/>, fn:()=>jump(idx-1), label:'Prev' },
+                { icon:<ArrowRight size={13}/>, fn:()=>jump(idx+1), label:'Next' },
+                { icon: playing ? <Pause size={12}/> : <Play size={12}/>, fn:()=>setPlaying(v=>!v), label:'Toggle' },
+              ].map(({ icon, fn, label }) => (
+                <button
+                  key={label}
+                  onClick={fn}
+                  aria-label={label}
+                  className="grid h-9 w-9 place-items-center rounded-full transition-all"
+                  style={{ border:'1px solid var(--border-hover)', color:'var(--text-muted)' }}
+                  onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)';(e.currentTarget as HTMLElement).style.color='var(--blue-bright)';}}
+                  onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.borderColor='var(--border-hover)';(e.currentTarget as HTMLElement).style.color='var(--text-muted)';}}
+                >
+                  {icon}
+                </button>
+              ))}
             </div>
-            <span className="font-sans text-[11px] text-[#4a4540] tracking-wider">
-              {String(active + 1).padStart(2,'0')} / {String(campaigns.length).padStart(2,'0')}
+            <span className="text-[11px] tracking-wider" style={{ color:'var(--text-muted)' }}>
+              {String(idx+1).padStart(2,'0')} / {String(slides.length).padStart(2,'0')}
             </span>
           </div>
-          {/* Progress dots */}
+          {/* Progress scrubbers */}
           <div className="flex gap-1.5">
-            {campaigns.map((c, i) => (
+            {slides.map((slide,i) => (
               <button
-                key={c.eyebrow}
-                onClick={() => select(i)}
-                aria-label={c.eyebrow}
-                className="relative h-0.5 flex-1 overflow-hidden rounded-full bg-[#2a2a2a]"
+                key={slide.tag}
+                onClick={() => jump(i)}
+                className="relative h-0.5 flex-1 overflow-hidden rounded-full"
+                style={{ background:'var(--border-hover)' }}
               >
                 <span
-                  className="absolute left-0 top-0 h-full bg-[#c9a84c] transition-all"
-                  style={{ width: i === active ? `${progress}%` : i < active ? '100%' : '0%' }}
+                  className="absolute left-0 top-0 h-full rounded-full transition-all"
+                  style={{
+                    background:'var(--blue-bright)',
+                    width: i===idx ? `${prog}%` : i<idx ? '100%' : '0%'
+                  }}
                 />
               </button>
             ))}
@@ -387,129 +421,135 @@ function CampaignHero({ onNavigate }: { onNavigate: (p: PageView) => void }) {
   );
 }
 
-// ─── Ticker Bar ────────────────────────────────────────────────────────────────
-function TickerBar() {
-  const items = [
-    'Original Apple Devices', 'Samsung Galaxy S26', 'Galaxy Z Fold 7',
-    'iPhone 17 Pro Max', 'Same-Day Repair', 'Phone Exchange',
-    'Genuine Warranty', 'Chitwan\'s Tech Store', 'iPhone Air',
-  ];
-  const repeated = [...items, ...items];
-  return (
-    <div className="overflow-hidden border-y border-[#1a1a1a] bg-[#0d0d0d] py-3">
-      <div className="ticker-track">
-        {repeated.map((item, i) => (
-          <span key={i} className="flex items-center gap-6 px-6 font-sans text-[12px] font-medium tracking-[.1em] uppercase text-[#3a3530]">
-            <span className="h-1 w-1 rounded-full bg-[#c9a84c] shrink-0" />
-            {item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
+// ── Home bento grid ───────────────────────────────────────────────────────────
+const bentoItems = [
+  { label:'Phones', sub:'iPhone & Galaxy', icon:<Smartphone size={15}/>, img:imgUser1, page:'phones' as PageView },
+  { label:'Exchange', sub:'Trade in', icon:<RefreshCw size={15}/>, img:imgExchange, page:'exchange' as PageView },
+  { label:'Repair', sub:'Same-day service', icon:<Wrench size={15}/>, img:imgRepair, page:'repair' as PageView },
+  { label:'Accessories', sub:'Cases & more', icon:<Watch size={15}/>, img:imgUser2, page:'phones' as PageView },
+  { label:'Showroom', sub:'Chitwan', icon:<MapPin size={15}/>, img:showroomDay, page:'showroom' as PageView },
+];
 
-// ─── Bento Grid Home ───────────────────────────────────────────────────────────
-function HomeBento({ onNavigate }: { onNavigate: (p: PageView) => void }) {
+function HomeBento({ goto }: { goto: (p: PageView) => void }) {
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
-      {/* Section heading */}
       <div className="mb-10">
-        <h2 className="font-serif text-[2.6rem] leading-[1.1] tracking-[-0.03em] text-[#f2ede6] md:text-[3.5rem]">
+        <h2 className="font-serif" style={{ fontSize:'clamp(2rem,4.5vw,3.5rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
           Everything you need.<br />
-          <span className="text-[#c9a84c]">One place.</span>
+          <span style={{ color:'var(--blue-bright)' }}>One place.</span>
         </h2>
       </div>
-
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:grid-rows-2">
-        {/* Large tile — Phones */}
+        {/* Large tile */}
         <button
-          onClick={() => onNavigate('phones')}
-          className="group relative col-span-2 row-span-2 overflow-hidden rounded-2xl bg-[#111] border border-[#1e1e1e] text-left min-h-[320px] md:min-h-[440px] card-lift"
+          onClick={() => goto('phones')}
+          className="group relative col-span-2 row-span-2 overflow-hidden rounded-2xl text-left card"
+          style={{ minHeight:320 }}
         >
-          <img src={imgUser1} alt="iPhone collection" className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/40 to-transparent" />
+          <img src={imgUser3} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" />
+          <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),rgba(10,10,18,.4) 50%,transparent)' }} />
           <div className="absolute bottom-6 left-6 right-6 z-10">
-            <span className="font-sans text-[11px] font-medium tracking-[.1em] uppercase text-[#c9a84c]">Phones</span>
-            <h3 className="mt-2 font-serif text-[1.8rem] leading-tight text-[#f2ede6]">Latest iPhones & Galaxy</h3>
-            <span className="mt-3 inline-flex items-center gap-1.5 font-sans text-[12px] text-[#8a7f72] group-hover:text-[#c9a84c] transition-colors">
-              Explore collection <ArrowRight size={13} />
+            <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Phones</span>
+            <h3 className="mt-2 font-serif text-[1.7rem] leading-tight" style={{ color:'var(--text-primary)' }}>
+              Latest iPhones &amp; Galaxy
+            </h3>
+            <span className="mt-3 inline-flex items-center gap-1.5 text-[12px] transition-colors group-hover:text-blue-400" style={{ color:'var(--text-secondary)' }}>
+              Explore <ArrowRight size={12} />
             </span>
           </div>
         </button>
 
-        {/* Exchange */}
-        <button
-          onClick={() => onNavigate('exchange')}
-          className="group relative overflow-hidden rounded-2xl bg-[#111] border border-[#1e1e1e] text-left min-h-[160px] md:min-h-[214px] card-lift"
-        >
-          <img src={imgExchange} alt="Phone exchange" className="absolute inset-0 h-full w-full object-cover opacity-40 transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 to-transparent" />
-          <div className="absolute bottom-4 left-4 z-10">
-            <RefreshCw size={16} className="text-[#c9a84c] mb-2" />
-            <h3 className="font-sans text-[15px] font-semibold text-[#f0ebe3]">Exchange</h3>
-          </div>
-        </button>
-
-        {/* Repair */}
-        <button
-          onClick={() => onNavigate('repair')}
-          className="group relative overflow-hidden rounded-2xl bg-[#111] border border-[#1e1e1e] text-left min-h-[160px] md:min-h-[214px] card-lift"
-        >
-          <img src={imgRepairScene} alt="Phone repair" className="absolute inset-0 h-full w-full object-cover opacity-40 transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 to-transparent" />
-          <div className="absolute bottom-4 left-4 z-10">
-            <Wrench size={16} className="text-[#c9a84c] mb-2" />
-            <h3 className="font-sans text-[15px] font-semibold text-[#f0ebe3]">Repair</h3>
-          </div>
-        </button>
-
-        {/* Accessories */}
-        <button
-          onClick={() => onNavigate('phones')}
-          className="group relative overflow-hidden rounded-2xl bg-[#111] border border-[#1e1e1e] text-left min-h-[160px] md:min-h-[214px] card-lift"
-        >
-          <img src={imgAccessory} alt="Accessories" className="absolute inset-0 h-full w-full object-cover opacity-40 transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 to-transparent" />
-          <div className="absolute bottom-4 left-4 z-10">
-            <Watch size={16} className="text-[#c9a84c] mb-2" />
-            <h3 className="font-sans text-[15px] font-semibold text-[#f0ebe3]">Accessories</h3>
-          </div>
-        </button>
-
-        {/* Showroom */}
-        <button
-          onClick={() => onNavigate('showroom')}
-          className="group relative overflow-hidden rounded-2xl bg-[#111] border border-[#1e1e1e] text-left min-h-[160px] md:min-h-[214px] card-lift"
-        >
-          <img src={imgShowroomInt} alt="Showroom" className="absolute inset-0 h-full w-full object-cover opacity-40 transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 to-transparent" />
-          <div className="absolute bottom-4 left-4 z-10">
-            <MapPin size={16} className="text-[#c9a84c] mb-2" />
-            <h3 className="font-sans text-[15px] font-semibold text-[#f0ebe3]">Showroom</h3>
-          </div>
-        </button>
+        {/* Small tiles */}
+        {bentoItems.slice(1).map(item => (
+          <button
+            key={item.label}
+            onClick={() => goto(item.page)}
+            className="group relative overflow-hidden rounded-2xl text-left card"
+            style={{ minHeight:155 }}
+          >
+            <img src={item.img} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35 transition-transform duration-700 group-hover:scale-105" />
+            <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),transparent)' }} />
+            <div className="absolute bottom-4 left-4 z-10">
+              <span style={{ color:'var(--blue-bright)' }}>{item.icon}</span>
+              <h3 className="mt-2 text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{item.label}</h3>
+              <p className="text-[12px]" style={{ color:'var(--text-muted)' }}>{item.sub}</p>
+            </div>
+          </button>
+        ))}
       </div>
     </section>
   );
 }
 
-// ─── User Gallery Strip ────────────────────────────────────────────────────────
+// ── Showroom feature ──────────────────────────────────────────────────────────
+function ShowroomFeature() {
+  return (
+    <section className="section border-y" style={{ borderColor:'var(--border)', background:'var(--bg-card)' }}>
+      <div className="mx-auto flex max-w-[1440px] flex-col gap-12 px-5 md:flex-row md:items-center md:px-12">
+        <div className="w-full md:w-1/2">
+          <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Chitwan · Nepal</span>
+          <h2 className="mt-4 font-serif" style={{ fontSize:'clamp(2rem,4vw,3.2rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+            Come see it<br /><span style={{ color:'var(--blue-bright)' }}>in person.</span>
+          </h2>
+          <p className="mt-5 max-w-md text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
+            Visit Apple Guru on Indra Dev Marga. Hold the devices. Ask real questions.
+            Leave with confidence about what you bought.
+          </p>
+          <div className="mt-8 grid max-w-xs grid-cols-2 gap-6 border-t pt-6" style={{ borderColor:'var(--border)' }}>
+            {[['3+','Years of trust'],['10k+','Happy customers']].map(([n,l]) => (
+              <div key={l}>
+                <p className="font-serif text-[2.4rem]" style={{ color:'var(--text-primary)' }}>{n}</p>
+                <p className="mt-1 text-[12px]" style={{ color:'var(--text-muted)' }}>{l}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Btn variant="primary" onClick={() => wa('Hello Apple Guru. I am planning to visit the showroom in Chitwan.')}>
+              Plan a visit <MessageCircle size={13} />
+            </Btn>
+            <a
+              href={MAPS_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-outline"
+            >
+              <Navigation size={13} /> Directions
+            </a>
+          </div>
+        </div>
+
+        <div className="relative w-full md:w-1/2">
+          <img
+            src={showroomDay}
+            alt="Apple Guru showroom, Indra Dev Marga Chitwan"
+            className="h-[300px] w-full rounded-2xl object-cover md:h-[420px]"
+          />
+          <div className="glass absolute bottom-5 left-5 right-5 flex items-center justify-between rounded-xl p-4">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>Location</p>
+              <p className="mt-0.5 text-[13px]" style={{ color:'var(--text-secondary)' }}>Indra Dev Marga, Bharatpur, Chitwan</p>
+            </div>
+            <a href={MAPS_URL} target="_blank" rel="noreferrer" style={{ color:'var(--blue-bright)' }}>
+              <Navigation size={17} />
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── User gallery strip ────────────────────────────────────────────────────────
 function GalleryStrip() {
-  const imgs = [imgUser1, imgUser2, imgUser3, imgUser4, imgUser5, imgUser1, imgUser2];
+  const imgs = [imgUser1,imgUser2,imgUser3,imgUser4,imgUser5,imgUser1,imgUser2];
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
-      <div className="mb-8">
-        <h2 className="font-serif text-[2.2rem] leading-[1.1] tracking-[-0.03em] text-[#f2ede6]">
-          Real devices.<br /><span className="text-[#c9a84c]">Real people.</span>
-        </h2>
-        <p className="mt-3 font-sans text-[15px] text-[#6a6560] max-w-md">
-          Every device at Apple Guru is genuine, warrantied, and tested before it reaches you.
-        </p>
-      </div>
-      <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-        {imgs.map((src, i) => (
-          <div key={i} className="flex-shrink-0 w-44 h-56 md:w-56 md:h-72 rounded-xl overflow-hidden">
+      <h2 className="mb-8 font-serif" style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+        Real devices.<br /><span style={{ color:'var(--blue-bright)' }}>Real people.</span>
+      </h2>
+      <div className="scrollbar-hide flex gap-3 overflow-x-auto pb-2">
+        {imgs.map((src,i) => (
+          <div key={i} className="shrink-0 overflow-hidden rounded-xl" style={{ width:176, height:224 }}>
             <img src={src} alt="" className="h-full w-full object-cover" />
           </div>
         ))}
@@ -518,280 +558,224 @@ function GalleryStrip() {
   );
 }
 
-// ─── Showroom Feature ──────────────────────────────────────────────────────────
-function ShowroomFeature() {
+// ── Product image component ───────────────────────────────────────────────────
+function ProdImg({ product, className='' }: { product:Product; className?:string }) {
   return (
-    <section className="section border-y border-[#1a1a1a] bg-[#0d0d0d]">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-12 px-5 md:flex-row md:items-center md:px-12">
-        <div className="w-full md:w-1/2">
-          <span className="font-sans text-[12px] font-medium tracking-[.1em] uppercase text-[#c9a84c]">Chitwan · Nepal</span>
-          <h2 className="mt-4 font-serif text-[2.6rem] leading-[1.1] tracking-[-0.03em] text-[#f2ede6] md:text-[3.2rem]">
-            One original<br />showroom.
-          </h2>
-          <p className="mt-5 max-w-md font-sans text-[16px] leading-7 text-[#6a6560]">
-            Visit Apple Guru on Indra Dev Marga. Hold the devices. Ask real questions. Leave with confidence about what you bought.
-          </p>
-          <div className="mt-8 grid max-w-xs grid-cols-2 gap-6 border-t border-[#1a1a1a] pt-6">
-            <div>
-              <p className="font-serif text-[2.4rem] text-[#f2ede6]">3+</p>
-              <p className="mt-1 font-sans text-[12px] text-[#6a6560]">Years of experience</p>
-            </div>
-            <div>
-              <p className="font-serif text-[2.4rem] text-[#f2ede6]">10k+</p>
-              <p className="mt-1 font-sans text-[12px] text-[#6a6560]">Happy customers</p>
-            </div>
-          </div>
-          <div className="mt-7 flex gap-3">
-            <Btn onClick={() => openWhatsApp('Hello Apple Guru. I am planning to visit the Chitwan showroom.')} variant="gold">
-              Plan a visit <MessageCircle size={14} />
-            </Btn>
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-[#2a2a2a] px-5 py-2.5 font-sans text-[13px] font-semibold text-[#8a7f72] hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all"
-            >
-              <Navigation size={14} /> Directions
-            </a>
-          </div>
-        </div>
-        <div className="relative w-full md:w-1/2">
-          <img
-            src={showroomDay}
-            alt="Apple Guru showroom at Indra Dev Marga"
-            className="h-[300px] w-full rounded-2xl object-cover md:h-[420px]"
-          />
-          <div
-            className="glass absolute bottom-5 left-5 right-5 flex items-center justify-between rounded-xl p-4"
-          >
-            <div>
-              <p className="font-sans text-[11px] text-[#c9a84c] tracking-[.08em] uppercase">Location</p>
-              <p className="mt-0.5 font-sans text-[13px] text-[#8a7f72]">Indra Dev Marga, Chitwan</p>
-            </div>
-            <a href={mapsUrl} target="_blank" rel="noreferrer" className="text-[#c9a84c] hover:text-[#d4b560]">
-              <Navigation size={18} />
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── Product Image ─────────────────────────────────────────────────────────────
-function imageFor(product: Product) {
-  return localImages[product.id] ?? product.image;
-}
-function ProductImage({ product, className = '' }: { product: Product; className?: string }) {
-  return (
-    <div className={`relative overflow-hidden bg-[#111] ${className}`}>
+    <div className={`relative overflow-hidden ${className}`} style={{ background:'var(--bg-raised)' }}>
       <img
-        src={imageFor(product)}
+        src={imgFor(product)}
         alt={product.name}
         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 to-transparent" />
+      <div className="absolute inset-0" style={{ background:'linear-gradient(to top,rgba(10,10,18,.55),transparent)' }} />
     </div>
   );
 }
 
-// ─── Product Card ──────────────────────────────────────────────────────────────
-function ProductCard({ product, onSelect, onWhatsApp }: {
-  product: Product; onSelect: (p: Product) => void; onWhatsApp: (m: string) => void;
-}) {
+// ── Product card ──────────────────────────────────────────────────────────────
+function ProductCard({ p, onSelect }: { p:Product; onSelect:(p:Product)=>void }) {
   return (
-    <article className="group product-card rounded-2xl overflow-hidden">
-      <button onClick={() => onSelect(product)} className="block w-full text-left">
-        <ProductImage product={product} className="h-52 md:h-60" />
+    <article className="group card">
+      <button onClick={() => onSelect(p)} className="block w-full text-left">
+        <ProdImg product={p} className="h-52 md:h-60" />
         <div className="p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3 className="font-sans text-[16px] font-semibold text-[#f0ebe3]">{product.name}</h3>
-              <p className="mt-0.5 font-sans text-[12px] text-[#c9a84c]">{product.editorialHighlight || product.brand}</p>
+              <h3 className="text-[15px] font-semibold" style={{ color:'var(--text-primary)' }}>{p.name}</h3>
+              <p className="mt-0.5 text-[12px]" style={{ color:'var(--blue-bright)' }}>
+                {p.editorialHighlight || p.brand}
+              </p>
             </div>
-            <ArrowUpRight size={16} className="text-[#c9a84c] mt-1 shrink-0" />
+            <ArrowUpRight size={15} style={{ color:'var(--blue-bright)', marginTop:2, flexShrink:0 }} />
           </div>
-          <p className="mt-3 font-sans text-[14px] leading-6 text-[#6a6560]">{product.tagline}</p>
-          <p className="mt-4 font-sans text-[14px] font-semibold text-[#f0ebe3]">{product.priceRange}</p>
+          <p className="mt-3 text-[13.5px] leading-6" style={{ color:'var(--text-secondary)' }}>{p.tagline}</p>
+          <p className="mt-4 text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{p.priceRange}</p>
         </div>
       </button>
-      <div className="border-t border-[#1e1e1e] px-5 py-3">
+      <div className="border-t px-5 py-3" style={{ borderColor:'var(--border)' }}>
         <button
-          onClick={() => onWhatsApp(`Hello Apple Guru. I would like to check ${product.name} at the Chitwan showroom.`)}
-          className="flex w-full items-center justify-center gap-2 font-sans text-[12px] font-semibold text-[#c9a84c] hover:text-[#d4b560] transition-colors py-1"
+          onClick={() => wa(`Hello Apple Guru. I would like to check ${p.name} at the showroom.`)}
+          className="flex w-full items-center justify-center gap-2 py-1 text-[12px] font-semibold transition-colors"
+          style={{ color:'var(--blue-bright)' }}
+          onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='var(--blue)'}
+          onMouseLeave={e=>(e.currentTarget as HTMLElement).style.color='var(--blue-bright)'}
         >
-          <MessageCircle size={13} /> Enquire on WhatsApp
+          <MessageCircle size={12} /> Enquire on WhatsApp
         </button>
       </div>
     </article>
   );
 }
 
-// ─── Product Catalog ───────────────────────────────────────────────────────────
-function ProductCatalog({ onSelect, onWhatsApp }: {
-  onSelect: (p: Product) => void; onWhatsApp: (m: string) => void;
-}) {
+// ── Product catalog ───────────────────────────────────────────────────────────
+function Catalog({ onSelect }: { onSelect:(p:Product)=>void }) {
   const [filter, setFilter] = useState('Apple');
-  const filters = ['Apple', 'Samsung', 'Trending', 'Other devices'];
-  const filtered = filter === 'Apple'
-    ? products.filter((p) => p.brand === 'Apple')
-    : filter === 'Samsung'
-    ? products.filter((p) => p.brand === 'Samsung')
-    : filter === 'Trending'
-    ? products.filter((p) => p.featured)
-    : products.filter((p) => p.category === 'Mac' || p.category === 'Audio & Wearables');
+  const tabs = ['Apple','Samsung','Trending','Other devices'];
+  const filtered =
+    filter==='Apple'   ? products.filter(p=>p.brand==='Apple') :
+    filter==='Samsung' ? products.filter(p=>p.brand==='Samsung') :
+    filter==='Trending'? products.filter(p=>p.featured) :
+    products.filter(p=>p.category==='Mac'||p.category==='Audio & Wearables');
 
-  const headings: Record<string, string> = {
-    Apple: 'Apple collection',
-    Samsung: 'Samsung collection',
-    Trending: 'Trending now',
-    'Other devices': 'Mac, Watch & Audio',
+  const headings: Record<string,string> = {
+    Apple:'Apple collection', Samsung:'Samsung collection',
+    Trending:'Trending now', 'Other devices':'Mac, Watch & Audio'
   };
 
   return (
-    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-16">
-      {/* Filter chips */}
-      <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-6">
-        {filters.map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`filter-chip ${filter === f ? 'active' : ''}`}
-          >
-            {f}
-          </button>
+    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
+      <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-5">
+        {tabs.map(t => (
+          <button key={t} onClick={()=>setFilter(t)} className={`chip ${filter===t?'active':''}`}>{t}</button>
         ))}
       </div>
-      <div className="mb-8 flex items-end justify-between border-b border-[#1a1a1a] pb-5">
-        <h1 className="font-serif text-[2rem] tracking-[-0.03em] text-[#f2ede6] md:text-[2.8rem]">
+      <div className="mb-8 flex items-end justify-between border-b pb-5" style={{ borderColor:'var(--border)' }}>
+        <h1 className="font-serif" style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', letterSpacing:'-.03em', color:'var(--text-primary)' }}>
           {headings[filter]}
         </h1>
-        <span className="font-sans text-[12px] text-[#4a4540]">{filtered.length} devices</span>
+        <span className="text-[12px]" style={{ color:'var(--text-muted)' }}>{filtered.length} devices</span>
       </div>
       {filtered.length ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} onSelect={onSelect} onWhatsApp={onWhatsApp} />
-          ))}
+          {filtered.map(p => <ProductCard key={p.id} p={p} onSelect={onSelect} />)}
         </div>
       ) : (
-        <div className="rounded-2xl border border-[#1e1e1e] p-12 text-center font-sans text-[#4a4540]">
+        <div className="rounded-2xl border p-12 text-center text-[14px]" style={{ borderColor:'var(--border)', color:'var(--text-muted)' }}>
           Nothing here yet.
         </div>
       )}
-      <p className="mt-8 font-sans text-[12px] italic text-center text-[#4a4540]">{priceDisclaimer}</p>
+      <p className="mt-8 text-center text-[12px] italic" style={{ color:'var(--text-muted)' }}>{priceDisclaimer}</p>
     </section>
   );
 }
 
-// ─── Exchange Page ─────────────────────────────────────────────────────────────
-function ExchangePage({ onWhatsApp, targetProduct, clearTarget }: {
-  onWhatsApp: (m: string) => void; targetProduct: Product | null; clearTarget: () => void;
-}) {
+// ── Exchange page ─────────────────────────────────────────────────────────────
+function ExchangePage({ target, clearTarget }: { target:Product|null; clearTarget:()=>void }) {
   const models = [
-    'iPhone 17 Pro Max', 'iPhone Air', 'iPhone 15 Pro Max', 'iPhone 15 Pro',
-    'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14', 'iPhone 13 Pro Max',
-    'Galaxy S26', 'Galaxy S24 Ultra', 'Galaxy S23 Ultra', 'Galaxy Z Fold 7',
-    'Galaxy Z Fold 5', 'Other flagship / Android'
+    'iPhone 17 Pro Max','iPhone Air','iPhone 15 Pro Max','iPhone 15 Pro',
+    'iPhone 15','iPhone 14 Pro Max','iPhone 14','iPhone 13 Pro Max',
+    'Galaxy S26 Ultra','Galaxy S24 Ultra','Galaxy S23 Ultra',
+    'Galaxy Z Fold 7','Galaxy Z Fold 5','Other flagship / Android'
   ];
   const conditions = [
-    { label: 'Like new — no scratches', multiplier: 1 },
-    { label: 'Good — light wear', multiplier: .88 },
-    { label: 'Cracked glass, works fine', multiplier: .65 },
-    { label: 'Heavy wear or issues', multiplier: .45 },
+    { label:'Like new — no scratches', mult:1 },
+    { label:'Good — light wear',       mult:.88 },
+    { label:'Cracked glass, works fine', mult:.65 },
+    { label:'Heavy wear or issues',    mult:.45 },
   ];
-  const [model, setModel] = useState(models[0]);
-  const [condition, setCondition] = useState(conditions[0]);
+  const [model, setModel]     = useState(models[0]);
+  const [cond,  setCond]      = useState(conditions[0]);
 
-  const base = model.includes('17 Pro Max') ? [145000, 175000] : model.includes('Air') ? [100000, 125000] : model.includes('15 Pro Max') ? [110000, 135000] : model.includes('15 Pro') ? [95000, 115000] : model.includes('15') ? [75000, 90000] : model.includes('14 Pro Max') ? [85000, 105000] : model.includes('14') ? [60000, 72000] : model.includes('13') ? [65000, 80000] : model.includes('S26') ? [115000, 145000] : model.includes('S24') ? [95000, 120000] : model.includes('S23') ? [70000, 88000] : model.includes('Fold') ? [85000, 110000] : [20000, 45000];
-  const low = Math.round(base[0] * condition.multiplier / 1000) * 1000;
-  const high = Math.round(base[1] * condition.multiplier / 1000) * 1000;
+  const base: [number,number] =
+    model.includes('17 Pro Max') ? [145000,175000] :
+    model.includes('Air')        ? [100000,125000] :
+    model.includes('15 Pro Max') ? [110000,135000] :
+    model.includes('15 Pro')     ? [95000,115000]  :
+    model.includes('15')         ? [75000,90000]   :
+    model.includes('14 Pro Max') ? [85000,105000]  :
+    model.includes('14')         ? [60000,72000]   :
+    model.includes('13')         ? [65000,80000]   :
+    model.includes('S26')        ? [115000,145000] :
+    model.includes('S24')        ? [95000,120000]  :
+    model.includes('S23')        ? [70000,88000]   :
+    model.includes('Fold')       ? [85000,110000]  : [20000,45000];
+
+  const lo = Math.round(base[0]*cond.mult/1000)*1000;
+  const hi = Math.round(base[1]*cond.mult/1000)*1000;
 
   return (
-    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-16">
-      <div className="max-w-2xl">
-        <span className="font-sans text-[12px] font-medium tracking-[.1em] uppercase text-[#c9a84c]">Phone Exchange</span>
-        <h1 className="mt-4 font-serif text-[3rem] leading-[1.05] tracking-[-0.03em] text-[#f2ede6] md:text-[5rem]">
-          Trade in.<br /><span className="text-[#c9a84c]">Level up.</span>
+    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
+      <div style={{ maxWidth:640 }}>
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Phone Exchange</span>
+        <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+          Trade in.<br /><span style={{ color:'var(--blue-bright)' }}>Level up.</span>
         </h1>
-        <p className="mt-5 font-sans text-[16px] leading-7 text-[#6a6560]">
-          Exchange your current phone for a new device. The value of your old phone comes off the price of your new one.
+        <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
+          Exchange your current phone for a new one. The value of your old device comes off the price.
         </p>
       </div>
 
       {/* Steps */}
-      <div className="mt-14 grid gap-3 md:grid-cols-3">
+      <div className="mt-12 grid gap-3 md:grid-cols-3">
         {[
-          ['Bring your phone', 'Walk in with your current device — any condition welcome.'],
-          ['We assess it', 'Our team evaluates condition, battery health, and resale value honestly.'],
-          ['Upgrade & save', 'The agreed exchange value is deducted from your new device.'],
-        ].map(([title, body], i) => (
-          <div key={title} className="rounded-2xl border border-[#1e1e1e] bg-[#0d0d0d] p-6">
-            <span className="font-sans text-[11px] text-[#c9a84c] font-medium tracking-[.1em] uppercase">{String(i + 1).padStart(2, '0')}</span>
-            <h3 className="mt-5 font-serif text-[1.2rem] text-[#f2ede6]">{title}</h3>
-            <p className="mt-2 font-sans text-[14px] leading-6 text-[#6a6560]">{body}</p>
+          ['Bring your phone','Walk in with your current device — any condition welcome.'],
+          ['We assess it','Our team evaluates condition, battery health, and resale value honestly.'],
+          ['Upgrade & save','The agreed exchange value is deducted from your new device.'],
+        ].map(([title,body],i) => (
+          <div key={title as string} className="rounded-2xl border p-6" style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}>
+            <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>
+              {String(i+1).padStart(2,'0')}
+            </span>
+            <h3 className="mt-5 font-serif text-[1.15rem]" style={{ color:'var(--text-primary)' }}>{title}</h3>
+            <p className="mt-2 text-[13.5px] leading-6" style={{ color:'var(--text-secondary)' }}>{body}</p>
           </div>
         ))}
       </div>
 
       {/* Estimator */}
-      <div className="mt-12 grid gap-6 rounded-2xl border border-[#1e1e1e] bg-[#0d0d0d] p-6 md:grid-cols-2 md:p-10">
+      <div className="mt-10 grid gap-6 rounded-2xl border p-6 md:grid-cols-2 md:p-10" style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}>
         <div>
-          <h2 className="font-serif text-[1.5rem] text-[#f2ede6]">Value estimator</h2>
-          <p className="mt-2 font-sans text-[13px] text-[#6a6560]">A rough guide. Final value assessed in store.</p>
-          <label className="mt-7 block font-sans text-[13px] font-semibold text-[#8a7f72]">Your current device</label>
+          <h2 className="font-serif text-[1.5rem]" style={{ color:'var(--text-primary)' }}>Value estimator</h2>
+          <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-muted)' }}>Rough guide only — final value assessed in store.</p>
+
+          <label className="mt-7 block text-[13px] font-semibold" style={{ color:'var(--text-secondary)' }}>Your current device</label>
           <div className="relative mt-2">
             <select
               value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className="h-12 w-full appearance-none rounded-xl border border-[#2a2a2a] bg-[#111] px-4 pr-10 font-sans text-[14px] text-[#f0ebe3] outline-none focus:border-[#c9a84c] transition-all"
+              onChange={e=>setModel(e.target.value)}
+              className="h-11 w-full appearance-none rounded-xl px-4 pr-10 text-[14px] outline-none transition-all"
+              style={{ border:'1px solid var(--border-hover)', background:'var(--bg-raised)', color:'var(--text-primary)' }}
+              onFocus={e=>(e.target as HTMLSelectElement).style.borderColor='var(--blue-bright)'}
+              onBlur={e=>(e.target as HTMLSelectElement).style.borderColor='var(--border-hover)'}
             >
-              {models.map((m) => <option key={m}>{m}</option>)}
+              {models.map(m=><option key={m}>{m}</option>)}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-3.5 text-[#6a6560]" size={16} />
+            <ChevronDown className="pointer-events-none absolute right-3 top-3" size={15} style={{ color:'var(--text-muted)' }} />
           </div>
-          <label className="mt-6 block font-sans text-[13px] font-semibold text-[#8a7f72]">Condition</label>
+
+          <label className="mt-6 block text-[13px] font-semibold" style={{ color:'var(--text-secondary)' }}>Condition</label>
           <div className="mt-2 space-y-2">
-            {conditions.map((c) => (
+            {conditions.map(c => (
               <button
                 key={c.label}
-                onClick={() => setCondition(c)}
-                className={`condition-btn w-full ${condition.label === c.label ? 'selected' : ''}`}
+                onClick={()=>setCond(c)}
+                className={`cond-btn ${cond.label===c.label?'selected':''}`}
               >
                 {c.label}
-                {condition.label === c.label && <Check size={15} className="text-[#c9a84c] shrink-0" />}
+                {cond.label===c.label && <Check size={14} style={{ color:'var(--blue-bright)', flexShrink:0 }} />}
               </button>
             ))}
           </div>
         </div>
-        <div className="border-t border-[#1e1e1e] pt-6 md:border-l md:border-t-0 md:pl-10 md:pt-0">
-          <h3 className="font-sans text-[13px] font-medium text-[#6a6560]">Working estimate</h3>
-          <p className="mt-5 font-serif text-[2.6rem] leading-[1.1] text-[#f2ede6]">
-            Rs. {low.toLocaleString()}
+
+        <div className="border-t pt-6 md:border-l md:border-t-0 md:pl-10 md:pt-0" style={{ borderColor:'var(--border)' }}>
+          <h3 className="text-[13px] font-medium" style={{ color:'var(--text-muted)' }}>Working estimate</h3>
+          <p className="mt-5 font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--text-primary)' }}>
+            Rs. {lo.toLocaleString()}
           </p>
-          <p className="font-serif text-[2.6rem] leading-[1.1] text-[#c9a84c]">
-            – Rs. {high.toLocaleString()}
+          <p className="font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--blue-bright)' }}>
+            – Rs. {hi.toLocaleString()}
           </p>
-          <p className="mt-4 font-sans text-[13px] leading-6 text-[#6a6560]">
-            Bring your device, its original box if you have it, and any cables. Our team does the rest.
+          <p className="mt-4 text-[13px] leading-6" style={{ color:'var(--text-secondary)' }}>
+            Bring your device, its original box if available, and any cables. Our team does the rest.
           </p>
-          <div className="mt-6 rounded-xl border border-[#1e1e1e] bg-[#111] p-4 font-sans text-[13px] text-[#6a6560]">
-            <CircleHelp size={14} className="mr-2 inline text-[#c9a84c]" />
-            Original parts and an unaltered serial pairing can add up to 25% more value.
+          <div className="mt-5 rounded-xl border p-4 text-[13px]" style={{ borderColor:'var(--border)', background:'var(--bg-raised)', color:'var(--text-secondary)' }}>
+            <CircleHelp size={13} className="mr-2 inline" style={{ color:'var(--blue-bright)' }} />
+            Original parts and unaltered pairing can add up to 25% more value.
           </div>
-          {targetProduct && (
-            <div className="mt-5 rounded-xl border border-[#c9a84c]/30 bg-[#c9a84c]/05 p-4">
-              <p className="font-sans text-[11px] text-[#c9a84c] font-medium tracking-[.08em] uppercase">In mind</p>
-              <p className="mt-1 font-sans text-[14px] font-semibold text-[#f0ebe3]">{targetProduct.name}</p>
-              <button onClick={clearTarget} className="mt-2 font-sans text-[12px] text-[#6a6560] underline">Clear</button>
+          {target && (
+            <div className="mt-5 rounded-xl border p-4" style={{ borderColor:'var(--blue)', background:'var(--blue-dim)' }}>
+              <p className="text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>Upgrading to</p>
+              <p className="mt-1 text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{target.name}</p>
+              <button onClick={clearTarget} className="mt-2 text-[12px] underline" style={{ color:'var(--text-muted)' }}>Clear</button>
             </div>
           )}
           <Btn
-            className="mt-7 w-full justify-center"
-            variant="gold"
-            onClick={() => onWhatsApp(`Hello Apple Guru. I want an exchange assessment for my ${model} in "${condition.label}" condition.`)}
+            className="mt-7 w-full"
+            variant="primary"
+            onClick={()=>wa(`Hello Apple Guru. I want an exchange assessment for my ${model} in "${cond.label}" condition.`)}
           >
-            Ask for assessment <MessageCircle size={14} />
+            Ask for assessment <MessageCircle size={13} />
           </Btn>
         </div>
       </div>
@@ -799,66 +783,68 @@ function ExchangePage({ onWhatsApp, targetProduct, clearTarget }: {
   );
 }
 
-// ─── Repair Page ───────────────────────────────────────────────────────────────
-function RepairPage({ onWhatsApp }: { onWhatsApp: (m: string) => void }) {
-  const [open, setOpen] = useState<string | null>(null);
+// ── Repair page ───────────────────────────────────────────────────────────────
+function RepairPage() {
+  const [open, setOpen] = useState<string|null>(null);
   return (
-    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-16">
-      <div className="max-w-2xl">
-        <span className="font-sans text-[12px] font-medium tracking-[.1em] uppercase text-[#c9a84c]">Repair</span>
-        <h1 className="mt-4 font-serif text-[3rem] leading-[1.05] tracking-[-0.03em] text-[#f2ede6] md:text-[5rem]">
-          Repair with<br /><span className="text-[#c9a84c]">a clear plan.</span>
+    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
+      <div style={{ maxWidth:640 }}>
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Repair</span>
+        <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+          Repair with<br /><span style={{ color:'var(--blue-bright)' }}>a clear plan.</span>
         </h1>
-        <p className="mt-5 font-sans text-[16px] leading-7 text-[#6a6560]">
+        <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
           Diagnosis first, honest options second, precision work third. We don't guess.
         </p>
-        <Btn className="mt-7" onClick={() => onWhatsApp('Hello Apple Guru. I want to book a repair.')} variant="gold">
-          Book a repair <ArrowRight size={15} />
+        <Btn className="mt-7" variant="primary" onClick={()=>wa('Hello Apple Guru. I want to book a repair.')}>
+          Book a repair <ArrowRight size={14} />
         </Btn>
       </div>
 
-      {/* Repair hero image */}
+      {/* Hero image — real repair lab */}
       <div className="mt-10 overflow-hidden rounded-2xl">
-        <img src={imgRepairScene} alt="Apple Guru repair lab" className="h-[280px] w-full object-cover md:h-[400px]" />
+        <img src={imgRepair} alt="Apple Guru repair lab" className="h-[260px] w-full object-cover md:h-[380px]" />
       </div>
 
-      {/* Quick enquiry bar */}
-      <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-[#1e1e1e] bg-[#0d0d0d] p-6 md:flex-row md:items-center md:justify-between md:p-8">
+      {/* WhatsApp enquiry */}
+      <div className="mt-6 flex flex-col gap-4 rounded-2xl border p-6 md:flex-row md:items-center md:justify-between md:p-8" style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}>
         <div>
-          <h2 className="font-serif text-[1.4rem] text-[#f2ede6]">Not sure if it can be repaired?</h2>
-          <p className="mt-2 font-sans text-[14px] leading-6 text-[#6a6560]">
-            Send a photo and describe the problem on WhatsApp. We'll tell you what's possible and what it'll cost.
+          <h2 className="font-serif text-[1.4rem]" style={{ color:'var(--text-primary)' }}>Not sure if it can be repaired?</h2>
+          <p className="mt-2 text-[14px] leading-6" style={{ color:'var(--text-secondary)' }}>
+            Send a photo and describe the issue on WhatsApp. We'll tell you what's possible and what it costs.
           </p>
         </div>
-        <Btn onClick={() => onWhatsApp('Hello Apple Guru repair desk. I want to know if my device is repairable. I can send photos.')} variant="gold" className="shrink-0">
-          <MessageCircle size={14} /> WhatsApp us
+        <Btn variant="primary" className="shrink-0" onClick={()=>wa('Hello Apple Guru repair desk. I want to check if my device is repairable.')}>
+          <MessageCircle size={13} /> WhatsApp us
         </Btn>
       </div>
 
-      {/* Services grid */}
+      {/* Services */}
       <div className="mt-12">
-        <h2 className="font-serif text-[1.8rem] tracking-[-0.02em] text-[#f2ede6] mb-6">What we repair</h2>
+        <h2 className="mb-6 font-serif text-[1.8rem]" style={{ color:'var(--text-primary)' }}>What we repair</h2>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {repairServices.slice(0, 6).map((service) => (
-            <article key={service.id} className="rounded-2xl border border-[#1e1e1e] bg-[#0d0d0d] p-6">
-              <Wrench size={18} className="text-[#c9a84c]" />
-              <h3 className="mt-5 font-serif text-[1.1rem] text-[#f2ede6]">{service.title}</h3>
-              <p className="mt-2 font-sans text-[13px] leading-6 text-[#6a6560]">{service.shortDesc}</p>
+          {repairServices.slice(0,6).map(svc => (
+            <article key={svc.id} className="card p-6">
+              <Wrench size={17} style={{ color:'var(--blue-bright)' }} />
+              <h3 className="mt-5 font-serif text-[1.05rem]" style={{ color:'var(--text-primary)' }}>{svc.title}</h3>
+              <p className="mt-2 text-[13px] leading-6" style={{ color:'var(--text-secondary)' }}>{svc.shortDesc}</p>
               <button
-                onClick={() => setOpen(open === service.id ? null : service.id)}
-                className="mt-5 flex items-center gap-1.5 font-sans text-[12px] font-semibold text-[#c9a84c] hover:text-[#d4b560] transition-colors"
+                onClick={()=>setOpen(open===svc.id?null:svc.id)}
+                className="mt-5 flex items-center gap-1.5 text-[12px] font-semibold transition-colors"
+                style={{ color:'var(--blue-bright)' }}
               >
-                {open === service.id ? <Minus size={13} /> : <Plus size={13} />}
-                {open === service.id ? 'Hide' : 'Common signs'}
+                {open===svc.id ? <Minus size={12}/> : <Plus size={12}/>}
+                {open===svc.id ? 'Hide' : 'Common signs'}
               </button>
-              {open === service.id && (
-                <div className="mt-4 border-t border-[#1e1e1e] pt-4 page-reveal">
-                  <ul className="space-y-1.5 font-sans text-[13px] text-[#6a6560]">
-                    {service.symptoms.slice(0, 4).map((s) => <li key={s}>— {s}</li>)}
+              {open===svc.id && (
+                <div className="mt-4 border-t pt-4 page-reveal" style={{ borderColor:'var(--border)' }}>
+                  <ul className="space-y-1.5 text-[13px]" style={{ color:'var(--text-secondary)' }}>
+                    {svc.symptoms.slice(0,4).map(s=><li key={s}>— {s}</li>)}
                   </ul>
                   <button
-                    onClick={() => onWhatsApp(`Hello Apple Guru repair desk. I want to ask about: ${service.title}.`)}
-                    className="mt-4 font-sans text-[12px] text-[#c9a84c] underline"
+                    onClick={()=>wa(`Hello Apple Guru repair desk. I want to ask about: ${svc.title}.`)}
+                    className="mt-4 text-[12px] underline"
+                    style={{ color:'var(--blue-bright)' }}
                   >
                     Ask about this repair
                   </button>
@@ -869,13 +855,13 @@ function RepairPage({ onWhatsApp }: { onWhatsApp: (m: string) => void }) {
         </div>
       </div>
 
-      {/* Process steps */}
-      <div className="mt-12 border-t border-[#1a1a1a] pt-12">
-        <h2 className="font-serif text-[1.5rem] text-[#f2ede6] mb-6">The process</h2>
+      {/* Process pills */}
+      <div className="mt-12 border-t pt-10" style={{ borderColor:'var(--border)' }}>
+        <h2 className="mb-5 font-serif text-[1.4rem]" style={{ color:'var(--text-primary)' }}>The process</h2>
         <div className="flex flex-wrap gap-2">
-          {['Bring device', 'Inspection', 'Assessment', 'Repair', 'Collect'].map((step, i) => (
-            <div key={step} className="flex items-center gap-3 rounded-full border border-[#1e1e1e] bg-[#0d0d0d] px-5 py-3 font-sans text-[13px] text-[#f0ebe3]">
-              <span className="text-[#c9a84c] font-medium">{String(i + 1).padStart(2, '0')}</span>
+          {['Bring device','Inspection','Assessment','Repair','Collect'].map((step,i)=>(
+            <div key={step} className="flex items-center gap-3 rounded-full border px-5 py-3 text-[13px]" style={{ borderColor:'var(--border)', background:'var(--bg-card)', color:'var(--text-primary)' }}>
+              <span className="font-medium" style={{ color:'var(--blue-bright)' }}>{String(i+1).padStart(2,'0')}</span>
               {step}
             </div>
           ))}
@@ -885,53 +871,52 @@ function RepairPage({ onWhatsApp }: { onWhatsApp: (m: string) => void }) {
   );
 }
 
-// ─── Showroom Page ─────────────────────────────────────────────────────────────
-function ShowroomPage({ onWhatsApp }: { onWhatsApp: (m: string) => void }) {
+// ── Showroom page ─────────────────────────────────────────────────────────────
+function ShowroomPage() {
   return (
-    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-16">
+    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
       <div className="grid gap-12 md:grid-cols-2 md:items-center">
         <div>
-          <span className="font-sans text-[12px] font-medium tracking-[.1em] uppercase text-[#c9a84c]">Our Showroom</span>
-          <h1 className="mt-4 font-serif text-[3rem] leading-[1.05] tracking-[-0.03em] text-[#f2ede6] md:text-[4.5rem]">
-            One original<br /><span className="text-[#c9a84c]">showroom.</span>
+          <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Our Showroom</span>
+          <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5vw,4.5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+            One original<br /><span style={{ color:'var(--blue-bright)' }}>showroom.</span>
           </h1>
-          <p className="mt-5 max-w-md font-sans text-[16px] leading-7 text-[#6a6560]">
+          <p className="mt-5 max-w-md text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
             Come to Indra Dev Marga. Hold the phones side by side. Talk to someone who uses this stuff every day.
           </p>
           <div className="mt-8 space-y-4">
             {[
-              { icon: MapPin, text: 'Indra Dev Marga, Bharatpur 44200, Chitwan' },
-              { icon: Clock3, text: 'Call ahead for a specific configuration or visit anytime.' },
-              { icon: Phone, text: '+977 9821 552 339', href: 'tel:9821552339' },
-            ].map(({ icon: Icon, text, href }) => (
-              <div key={text} className="flex items-center gap-3 font-sans text-[14px] text-[#6a6560]">
-                <Icon size={16} className="text-[#c9a84c] shrink-0" />
-                {href ? <a href={href} className="underline hover:text-[#c9a84c]">{text}</a> : text}
+              { Icon:MapPin,  text:'Indra Dev Marga, Bharatpur 44200, Chitwan' },
+              { Icon:Clock3,  text:'Call ahead for a specific configuration or visit anytime.' },
+              { Icon:Phone,   text:'+977 9821 552 339', href:'tel:9821552339' },
+            ].map(({ Icon, text, href })=>(
+              <div key={text} className="flex items-start gap-3 text-[14px]" style={{ color:'var(--text-secondary)' }}>
+                <Icon size={15} style={{ color:'var(--blue-bright)', flexShrink:0, marginTop:2 }} />
+                {href ? <a href={href} className="underline" style={{ color:'var(--text-secondary)' }}
+                  onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='var(--blue-bright)'}
+                  onMouseLeave={e=>(e.currentTarget as HTMLElement).style.color='var(--text-secondary)'}
+                >{text}</a> : text}
               </div>
             ))}
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Btn onClick={() => onWhatsApp('Hello Apple Guru. I am planning to visit the Chitwan showroom.')} variant="gold">
-              Plan a visit <MessageCircle size={14} />
+            <Btn variant="primary" onClick={()=>wa('Hello Apple Guru. I am planning to visit the Chitwan showroom.')}>
+              Plan a visit <MessageCircle size={13} />
             </Btn>
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-[#2a2a2a] px-5 py-2.5 font-sans text-[13px] font-semibold text-[#8a7f72] hover:border-[#c9a84c] hover:text-[#c9a84c] transition-all"
-            >
-              <Navigation size={14} /> Get directions
+            <a href={MAPS_URL} target="_blank" rel="noreferrer" className="btn btn-outline">
+              <Navigation size={13} /> Get directions
             </a>
           </div>
         </div>
+
         <div>
-          <img src={showroomNight} alt="Apple Guru showroom" className="h-[360px] w-full rounded-2xl object-cover md:h-[500px]" />
+          <img src={showroomNight} alt="Apple Guru showroom at night" className="h-[360px] w-full rounded-2xl object-cover md:h-[480px]" />
         </div>
       </div>
 
-      {/* Showroom gallery */}
-      <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-4">
-        {[imgShowroomInt, imgUser3, imgUser4, imgUser5].map((src, i) => (
+      {/* Real photo gallery — NO AI showroom image */}
+      <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
+        {[showroomDay, imgUser1, imgUser4, imgUser5].map((src,i)=>(
           <div key={i} className="overflow-hidden rounded-xl">
             <img src={src} alt="" className="h-44 w-full object-cover" />
           </div>
@@ -941,33 +926,37 @@ function ShowroomPage({ onWhatsApp }: { onWhatsApp: (m: string) => void }) {
   );
 }
 
-// ─── Journal Page ──────────────────────────────────────────────────────────────
-function JournalPage({ onSelect }: { onSelect: (post: BlogPost) => void }) {
+// ── Journal page ──────────────────────────────────────────────────────────────
+function JournalPage({ onSelect }: { onSelect:(p:BlogPost)=>void }) {
   return (
-    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-16">
-      <span className="font-sans text-[12px] font-medium tracking-[.1em] uppercase text-[#c9a84c]">Journal</span>
-      <h1 className="mt-4 font-serif text-[3rem] leading-[1.05] tracking-[-0.03em] text-[#f2ede6] md:text-[5rem]">
-        Useful things<br /><span className="text-[#c9a84c]">to know.</span>
+    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
+      <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Journal</span>
+      <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+        Useful things<br /><span style={{ color:'var(--blue-bright)' }}>to know.</span>
       </h1>
       <div className="mt-12">
-        {blogPosts.map((post, i) => (
+        {blogPosts.map((post,i)=>(
           <button
             key={post.id}
-            onClick={() => onSelect(post)}
-            className="group grid w-full gap-4 border-t border-[#1a1a1a] py-8 text-left md:grid-cols-[60px_1fr_140px]"
+            onClick={()=>onSelect(post)}
+            className="group grid w-full gap-4 border-t py-8 text-left md:grid-cols-[60px_1fr_130px]"
+            style={{ borderColor:'var(--border)' }}
           >
-            <span className="font-sans text-[12px] font-medium text-[#c9a84c]">0{i + 1}</span>
+            <span className="text-[12px] font-medium" style={{ color:'var(--blue-bright)' }}>0{i+1}</span>
             <span>
-              <span className="font-sans text-[11px] font-medium tracking-[.08em] uppercase text-[#4a4540]">
+              <span className="text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--text-muted)' }}>
                 {post.category} · {post.readTime}
               </span>
-              <strong className="mt-3 block max-w-3xl font-serif text-[1.3rem] leading-tight text-[#f2ede6] group-hover:text-[#c9a84c] transition-colors md:text-[1.8rem]">
+              <strong className="mt-2.5 block max-w-3xl font-serif leading-tight transition-colors group-hover:text-blue-400"
+                style={{ fontSize:'clamp(1.1rem,2.2vw,1.7rem)', color:'var(--text-primary)' }}>
                 {post.title}
               </strong>
-              <span className="mt-3 block max-w-2xl font-sans text-[14px] leading-6 text-[#6a6560]">{post.excerpt}</span>
+              <span className="mt-2.5 block max-w-2xl text-[13.5px] leading-6" style={{ color:'var(--text-muted)' }}>
+                {post.excerpt}
+              </span>
             </span>
-            <span className="flex items-center gap-1.5 font-sans text-[11px] font-medium text-[#4a4540] group-hover:text-[#c9a84c] transition-colors md:justify-end">
-              Read <ArrowUpRight size={13} />
+            <span className="flex items-center gap-1.5 text-[11px] font-medium transition-colors group-hover:text-blue-400 md:justify-end" style={{ color:'var(--text-muted)' }}>
+              Read <ArrowUpRight size={12} />
             </span>
           </button>
         ))}
@@ -976,39 +965,47 @@ function JournalPage({ onSelect }: { onSelect: (post: BlogPost) => void }) {
   );
 }
 
-// ─── Footer ────────────────────────────────────────────────────────────────────
-function Footer({ onNavigate }: { onNavigate: (p: PageView) => void }) {
+// ── Footer ────────────────────────────────────────────────────────────────────
+function Footer({ goto }: { goto:(p:PageView)=>void }) {
   return (
-    <footer className="border-t border-[#1a1a1a] bg-[#0a0a0a] px-5 pb-24 pt-16 md:px-12 md:pb-12">
+    <footer className="border-t px-5 pb-24 pt-14 md:px-12 md:pb-14" style={{ borderColor:'var(--border)', background:'var(--bg-card)' }}>
       <div className="mx-auto max-w-[1440px]">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <Logo />
-            <p className="mt-5 max-w-sm font-sans text-[14px] leading-7 text-[#4a4540]">
+            <p className="mt-5 max-w-sm text-[14px] leading-7" style={{ color:'var(--text-muted)' }}>
               Apple Guru is Chitwan's home for original Apple and Samsung devices, genuine repair, and honest advice.
             </p>
-            <div className="mt-5 deva-bar text-left" style={{ color: 'rgba(201,168,76,.5)', fontSize: 13 }}>
-              चितवनको भरोसेमान्द टेक स्टोर
-            </div>
+            <div className="deva-bar mt-4" style={{ color:'var(--text-muted)' }}>चितवनको भरोसेमान्द टेक स्टोर</div>
           </div>
           <div className="flex flex-col gap-3">
-            <span className="font-sans text-[12px] font-semibold tracking-[.08em] uppercase text-[#f0ebe3]">Services</span>
-            {[['Phones', 'phones'], ['Exchange', 'exchange'], ['Repair', 'repair']].map(([label, page]) => (
-              <button key={page} onClick={() => onNavigate(page as PageView)} className="text-left font-sans text-[14px] text-[#4a4540] hover:text-[#c9a84c] transition-colors">
-                {label}
-              </button>
+            <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--text-primary)' }}>Services</span>
+            {(['phones','exchange','repair'] as PageView[]).map(p=>(
+              <button key={p} onClick={()=>goto(p)} className="text-left text-[14px] capitalize transition-colors"
+                style={{ color:'var(--text-muted)' }}
+                onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='var(--blue-bright)'}
+                onMouseLeave={e=>(e.currentTarget as HTMLElement).style.color='var(--text-muted)'}
+              >{p}</button>
             ))}
           </div>
           <div className="flex flex-col gap-3">
-            <span className="font-sans text-[12px] font-semibold tracking-[.08em] uppercase text-[#f0ebe3]">Company</span>
-            <button onClick={() => onNavigate('insights')} className="text-left font-sans text-[14px] text-[#4a4540] hover:text-[#c9a84c] transition-colors">Journal</button>
-            <button onClick={() => onNavigate('showroom')} className="text-left font-sans text-[14px] text-[#4a4540] hover:text-[#c9a84c] transition-colors">Showroom</button>
-            <a href="tel:9821552339" className="font-sans text-[14px] text-[#4a4540] hover:text-[#c9a84c] transition-colors">Contact</a>
-            <a href={mapsUrl} target="_blank" rel="noreferrer" className="font-sans text-[14px] text-[#4a4540] hover:text-[#c9a84c] transition-colors">Directions</a>
+            <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--text-primary)' }}>Company</span>
+            {[['Journal','insights'],['Showroom','showroom']].map(([label,p])=>(
+              <button key={p} onClick={()=>goto(p as PageView)} className="text-left text-[14px] transition-colors"
+                style={{ color:'var(--text-muted)' }}
+                onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='var(--blue-bright)'}
+                onMouseLeave={e=>(e.currentTarget as HTMLElement).style.color='var(--text-muted)'}
+              >{label}</button>
+            ))}
+            <a href="tel:9821552339" className="text-[14px] transition-colors"
+              style={{ color:'var(--text-muted)' }}
+              onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='var(--blue-bright)'}
+              onMouseLeave={e=>(e.currentTarget as HTMLElement).style.color='var(--text-muted)'}
+            >Contact</a>
           </div>
         </div>
-        <div className="gold-line mt-10" />
-        <p className="mt-6 font-sans text-[12px] text-[#2a2a2a] text-center">
+        <div className="divider mt-10" />
+        <p className="mt-6 text-center text-[12px]" style={{ color:'var(--text-muted)' }}>
           © {new Date().getFullYear()} Apple Guru, Chitwan, Nepal. All rights reserved.
         </p>
       </div>
@@ -1016,53 +1013,58 @@ function Footer({ onNavigate }: { onNavigate: (p: PageView) => void }) {
   );
 }
 
-// ─── Product Modal ─────────────────────────────────────────────────────────────
-function ProductModal({ product, onClose, onWhatsApp, onExchange, onNavigate }: {
-  product: Product | null; onClose: () => void; onWhatsApp: (m: string) => void;
-  onExchange: (p: Product) => void; onNavigate: (p: PageView) => void;
+// ── Product modal ─────────────────────────────────────────────────────────────
+function ProductModal({ product, onClose, onExchange, goto }: {
+  product:Product|null; onClose:()=>void;
+  onExchange:(p:Product)=>void; goto:(p:PageView)=>void;
 }) {
   if (!product) return null;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/85 p-4 backdrop-blur-sm"
-      role="dialog" aria-modal="true" onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background:'rgba(5,5,12,.88)', backdropFilter:'blur(12px)' }}
+      onClick={onClose}
     >
       <div
-        className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl border border-[#1e1e1e] bg-[#0d0d0d]"
-        onClick={(e) => e.stopPropagation()}
+        className="max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-2xl border"
+        style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}
+        onClick={e=>e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-[#1a1a1a] p-5">
-          <span className="font-sans text-[12px] font-medium tracking-[.08em] uppercase text-[#c9a84c]">{product.brand}</span>
-          <button onClick={onClose} className="text-[#6a6560] hover:text-[#f0ebe3] transition-colors" aria-label="Close">
-            <X size={18} />
+        <div className="flex items-center justify-between border-b px-5 py-4" style={{ borderColor:'var(--border)' }}>
+          <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>{product.brand}</span>
+          <button onClick={onClose} style={{ color:'var(--text-muted)' }}
+            onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='var(--text-primary)'}
+            onMouseLeave={e=>(e.currentTarget as HTMLElement).style.color='var(--text-muted)'}
+          >
+            <X size={17} />
           </button>
         </div>
         <div className="grid md:grid-cols-2">
-          <div className="p-6">
-            <ProductImage product={product} className="aspect-square rounded-xl" />
-          </div>
-          <div className="p-6">
-            <h2 className="font-serif text-[2rem] tracking-[-0.02em] text-[#f2ede6] md:text-[2.8rem]">{product.name}</h2>
-            <p className="mt-2 font-sans text-[14px] text-[#c9a84c]">{product.tagline}</p>
-            <div className="my-6 border-y border-[#1a1a1a] py-5">
-              <p className="font-sans text-[12px] text-[#6a6560]">Guide price</p>
-              <p className="mt-1 font-serif text-[1.5rem] text-[#f2ede6]">{product.priceRange}</p>
-              <p className="mt-1 font-sans text-[12px] text-[#4a4540]">{priceDisclaimer}</p>
+          <ProdImg product={product} className="h-72 md:h-full md:min-h-[360px]" />
+          <div className="p-6 md:p-8">
+            <h2 className="font-serif" style={{ fontSize:'clamp(1.8rem,3vw,2.6rem)', letterSpacing:'-.02em', color:'var(--text-primary)' }}>
+              {product.name}
+            </h2>
+            <p className="mt-1.5 text-[13.5px]" style={{ color:'var(--blue-bright)' }}>{product.tagline}</p>
+            <div className="my-6 border-y py-5" style={{ borderColor:'var(--border)' }}>
+              <p className="text-[12px]" style={{ color:'var(--text-muted)' }}>Guide price</p>
+              <p className="mt-1 font-serif text-[1.6rem]" style={{ color:'var(--text-primary)' }}>{product.priceRange}</p>
+              <p className="mt-1 text-[12px]" style={{ color:'var(--text-muted)' }}>{priceDisclaimer}</p>
             </div>
-            <p className="font-sans text-[14px] leading-7 text-[#6a6560]">{product.description}</p>
-            <ul className="mt-5 space-y-2 border-t border-[#1a1a1a] pt-5">
-              {product.keySpecs.slice(0, 4).map((spec) => (
-                <li key={spec} className="flex items-start gap-2 font-sans text-[13px] text-[#6a6560]">
-                  <Check size={14} className="text-[#c9a84c] mt-0.5 shrink-0" /> {spec}
+            <p className="text-[14px] leading-7" style={{ color:'var(--text-secondary)' }}>{product.description}</p>
+            <ul className="mt-5 space-y-2 border-t pt-5" style={{ borderColor:'var(--border)' }}>
+              {product.keySpecs.slice(0,4).map(spec=>(
+                <li key={spec} className="flex items-start gap-2 text-[13px]" style={{ color:'var(--text-secondary)' }}>
+                  <Check size={13} style={{ color:'var(--blue-bright)', marginTop:3, flexShrink:0 }} />{spec}
                 </li>
               ))}
             </ul>
             <div className="mt-7 flex flex-wrap gap-2">
-              <Btn variant="gold" onClick={() => onWhatsApp(`Hello Apple Guru. Please confirm stock and pricing for ${product.name}.`)}>
-                <MessageCircle size={14} /> Ask availability
+              <Btn variant="primary" onClick={()=>wa(`Hello Apple Guru. Please confirm stock and pricing for ${product.name}.`)}>
+                <MessageCircle size={13} /> Check availability
               </Btn>
-              <Btn variant="outline" onClick={() => onExchange(product)}>
-                Exchange toward this <ArrowRight size={14} />
+              <Btn variant="outline" onClick={()=>onExchange(product)}>
+                Exchange toward this <ArrowRight size={13} />
               </Btn>
             </div>
           </div>
@@ -1072,29 +1074,35 @@ function ProductModal({ product, onClose, onWhatsApp, onExchange, onNavigate }: 
   );
 }
 
-// ─── Journal Modal ─────────────────────────────────────────────────────────────
-function JournalModal({ post, onClose }: { post: BlogPost | null; onClose: () => void }) {
+// ── Journal modal ─────────────────────────────────────────────────────────────
+function JournalModal({ post, onClose }: { post:BlogPost|null; onClose:()=>void }) {
   if (!post) return null;
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0a]/85 p-4 backdrop-blur-sm"
-      role="dialog" aria-modal="true" onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background:'rgba(5,5,12,.88)', backdropFilter:'blur(12px)' }}
+      onClick={onClose}
     >
       <article
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-[#1e1e1e] bg-[#0d0d0d] p-7 md:p-10"
-        onClick={(e) => e.stopPropagation()}
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border p-7 md:p-10"
+        style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}
+        onClick={e=>e.stopPropagation()}
       >
         <div className="flex justify-between">
-          <span className="font-sans text-[12px] font-medium tracking-[.08em] uppercase text-[#c9a84c]">
+          <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>
             {post.category} · {post.readTime}
           </span>
-          <button onClick={onClose} className="text-[#6a6560] hover:text-[#f0ebe3] transition-colors"><X size={17} /></button>
+          <button onClick={onClose} style={{ color:'var(--text-muted)' }}><X size={16} /></button>
         </div>
-        <h2 className="mt-7 font-serif text-[2rem] leading-tight tracking-[-0.02em] text-[#f2ede6] md:text-[2.6rem]">{post.title}</h2>
-        <p className="mt-5 border-l-2 border-[#c9a84c] pl-4 font-sans text-[14px] leading-7 text-[#6a6560]">{post.keyTakeaway}</p>
+        <h2 className="mt-6 font-serif" style={{ fontSize:'clamp(1.6rem,3vw,2.4rem)', lineHeight:1.15, letterSpacing:'-.02em', color:'var(--text-primary)' }}>
+          {post.title}
+        </h2>
+        <p className="mt-5 border-l-2 pl-4 text-[14px] leading-7 italic" style={{ borderColor:'var(--blue)', color:'var(--text-secondary)' }}>
+          {post.keyTakeaway}
+        </p>
         <div className="mt-7 space-y-5">
-          {post.content.map((p) => (
-            <p key={p} className="font-sans text-[15px] leading-8 text-[#6a6560]">{p}</p>
+          {post.content.map((para,i)=>(
+            <p key={i} className="text-[14.5px] leading-8" style={{ color:'var(--text-secondary)' }}>{para}</p>
           ))}
         </div>
       </article>
@@ -1102,78 +1110,84 @@ function JournalModal({ post, onClose }: { post: BlogPost | null; onClose: () =>
   );
 }
 
-// ─── Search Dialog ─────────────────────────────────────────────────────────────
+// ── Search dialog ─────────────────────────────────────────────────────────────
 function SearchDialog({ open, onClose, onProduct, onPost }: {
-  open: boolean; onClose: () => void;
-  onProduct: (p: Product) => void; onPost: (p: BlogPost) => void;
+  open:boolean; onClose:()=>void;
+  onProduct:(p:Product)=>void; onPost:(p:BlogPost)=>void;
 }) {
-  const [query, setQuery] = useState('');
-  useEffect(() => { if (!open) setQuery(''); }, [open]);
+  const [q, setQ] = useState('');
+  useEffect(()=>{ if (!open) setQ(''); },[open]);
   if (!open) return null;
-  const term = query.toLowerCase().trim();
-  const ps = products.filter((p) => `${p.name} ${p.brand} ${p.category}`.toLowerCase().includes(term)).slice(0, 5);
-  const posts = blogPosts.filter((p) => `${p.title} ${p.category}`.toLowerCase().includes(term)).slice(0, 3);
+  const term = q.toLowerCase().trim();
+  const ps   = products.filter(p=>`${p.name} ${p.brand} ${p.category}`.toLowerCase().includes(term)).slice(0,5);
+  const posts = blogPosts.filter(p=>`${p.title} ${p.category}`.toLowerCase().includes(term)).slice(0,3);
+
   return (
     <div
-      className="fixed inset-0 z-50 bg-[#0a0a0a]/85 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 p-4"
+      style={{ background:'rgba(5,5,12,.88)', backdropFilter:'blur(12px)' }}
       onClick={onClose}
     >
       <div
-        className="mx-auto mt-[8vh] max-w-2xl overflow-hidden rounded-2xl border border-[#1e1e1e] bg-[#0d0d0d]"
-        onClick={(e) => e.stopPropagation()}
+        className="mx-auto mt-[8vh] max-w-2xl overflow-hidden rounded-2xl border"
+        style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}
+        onClick={e=>e.stopPropagation()}
       >
-        <div className="flex items-center gap-3 border-b border-[#1a1a1a] px-5 py-4">
-          <Search size={17} className="text-[#c9a84c] shrink-0" />
+        <div className="flex items-center gap-3 border-b px-5 py-4" style={{ borderColor:'var(--border)' }}>
+          <Search size={16} style={{ color:'var(--blue-bright)', flexShrink:0 }} />
           <input
             autoFocus
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search devices, notes..."
-            className="min-h-10 flex-1 bg-transparent font-sans text-[15px] text-[#f0ebe3] outline-none placeholder:text-[#4a4540]"
+            value={q}
+            onChange={e=>setQ(e.target.value)}
+            placeholder="Search devices, journal..."
+            className="min-h-10 flex-1 bg-transparent text-[15px] outline-none"
+            style={{ color:'var(--text-primary)' }}
           />
-          <button onClick={onClose} className="text-[#6a6560] hover:text-[#f0ebe3]"><X size={17} /></button>
+          <button onClick={onClose} style={{ color:'var(--text-muted)' }}><X size={16} /></button>
         </div>
-        <div className="max-h-[60vh] overflow-y-auto p-4">
-          {ps.length > 0 && (
-            <div>
-              <p className="mb-3 font-sans text-[11px] font-medium tracking-[.08em] uppercase text-[#c9a84c]">Devices</p>
-              {ps.map((p) => (
+        <div className="max-h-[60vh] overflow-y-auto p-3">
+          {ps.length>0 && (
+            <>
+              <p className="mb-2 px-2 text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>Devices</p>
+              {ps.map(p=>(
                 <button
                   key={p.id}
-                  onClick={() => { onClose(); onProduct(p); }}
-                  className="flex w-full items-center justify-between border-b border-[#1a1a1a] py-3 text-left hover:bg-[#111] px-2 rounded transition-colors"
+                  onClick={()=>{ onClose(); onProduct(p); }}
+                  className="flex w-full items-center justify-between rounded-xl border-b px-3 py-3 text-left transition-colors hover:bg-blue-900/10"
+                  style={{ borderColor:'var(--border)' }}
                 >
                   <span>
-                    <b className="block font-sans text-[14px] font-semibold text-[#f0ebe3]">{p.name}</b>
-                    <small className="font-sans text-[12px] text-[#6a6560]">{p.brand} · {p.priceRange}</small>
+                    <b className="block text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{p.name}</b>
+                    <small className="text-[12px]" style={{ color:'var(--text-muted)' }}>{p.brand} · {p.priceRange}</small>
                   </span>
-                  <ArrowUpRight size={14} className="text-[#c9a84c]" />
+                  <ArrowUpRight size={13} style={{ color:'var(--blue-bright)' }} />
                 </button>
               ))}
-            </div>
+            </>
           )}
-          {posts.length > 0 && (
-            <div className="mt-5">
-              <p className="mb-3 font-sans text-[11px] font-medium tracking-[.08em] uppercase text-[#c9a84c]">Journal</p>
-              {posts.map((p) => (
+          {posts.length>0 && (
+            <div className="mt-4">
+              <p className="mb-2 px-2 text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>Journal</p>
+              {posts.map(p=>(
                 <button
                   key={p.id}
-                  onClick={() => { onClose(); onPost(p); }}
-                  className="flex w-full items-center justify-between border-b border-[#1a1a1a] py-3 text-left hover:bg-[#111] px-2 rounded transition-colors"
+                  onClick={()=>{ onClose(); onPost(p); }}
+                  className="flex w-full items-center justify-between rounded-xl border-b px-3 py-3 text-left transition-colors hover:bg-blue-900/10"
+                  style={{ borderColor:'var(--border)' }}
                 >
                   <span>
-                    <b className="block font-sans text-[14px] font-semibold text-[#f0ebe3]">{p.title}</b>
-                    <small className="font-sans text-[12px] text-[#6a6560]">{p.category}</small>
+                    <b className="block text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{p.title}</b>
+                    <small className="text-[12px]" style={{ color:'var(--text-muted)' }}>{p.category}</small>
                   </span>
-                  <ArrowUpRight size={14} className="text-[#c9a84c]" />
+                  <ArrowUpRight size={13} style={{ color:'var(--blue-bright)' }} />
                 </button>
               ))}
             </div>
           )}
           {!ps.length && !posts.length && (
             <div className="py-14 text-center">
-              <FileText size={24} className="mx-auto text-[#c9a84c]" />
-              <p className="mt-4 font-sans text-[14px] text-[#6a6560]">Nothing matched that search.</p>
+              <FileText size={22} style={{ color:'var(--blue-bright)', margin:'0 auto 12px' }} />
+              <p className="text-[14px]" style={{ color:'var(--text-muted)' }}>Nothing matched.</p>
             </div>
           )}
         </div>
@@ -1182,91 +1196,86 @@ function SearchDialog({ open, onClose, onProduct, onPost }: {
   );
 }
 
-// ─── Home Page ─────────────────────────────────────────────────────────────────
-function HomePage({ onNavigate, onWhatsApp }: {
-  onNavigate: (p: PageView) => void;
-  onWhatsApp: (m: string) => void;
-}) {
+// ── Home page ─────────────────────────────────────────────────────────────────
+function HomePage({ goto }: { goto:(p:PageView)=>void }) {
   return (
     <>
-      <CampaignHero onNavigate={onNavigate} />
-      <TickerBar />
-      <HomeBento onNavigate={onNavigate} />
+      <Hero goto={goto} />
+      <Ticker />
+      <HomeBento goto={goto} />
       <ShowroomFeature />
       <GalleryStrip />
-      <Footer onNavigate={onNavigate} />
+      <Footer goto={goto} />
     </>
   );
 }
 
-// ─── App shell ─────────────────────────────────────────────────────────────────
+// ── App shell ─────────────────────────────────────────────────────────────────
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState<PageView>('home');
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [targetProduct, setTargetProduct] = useState<Product | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [page,            setPage]            = useState<PageView>('home');
+  const [selectedProduct, setSelectedProduct] = useState<Product|null>(null);
+  const [selectedPost,    setSelectedPost]    = useState<BlogPost|null>(null);
+  const [targetProduct,   setTargetProduct]   = useState<Product|null>(null);
+  const [searchOpen,      setSearchOpen]      = useState(false);
   const [location, setLocation] = useLocation();
 
-  const pathPage = location.replace(/^\/+/, '') as PageView;
-  useEffect(() => {
-    if (['home', 'phones', 'exchange', 'repair', 'showroom', 'insights', 'facts', 'location'].includes(pathPage))
-      setCurrentPage(pathPage || 'home');
-  }, [pathPage]);
+  useEffect(()=>{
+    const raw = location.replace(/^\/+/,'') as PageView;
+    const valid: PageView[] = ['home','phones','exchange','repair','showroom','insights','facts','location'];
+    if (valid.includes(raw)) setPage(raw||'home');
+  },[location]);
 
-  useEffect(() => {
-    const titles: Record<string, string> = {
-      home: 'Apple Guru · Chitwan\'s Tech Store',
-      phones: 'Phones · Apple Guru',
-      exchange: 'Exchange · Apple Guru',
-      repair: 'Repair · Apple Guru',
-      showroom: 'Showroom · Apple Guru',
-      insights: 'Journal · Apple Guru',
+  useEffect(()=>{
+    const titles: Record<string,string> = {
+      home:"Apple Guru · Chitwan's Tech Store",
+      phones:'Phones · Apple Guru', exchange:'Exchange · Apple Guru',
+      repair:'Repair · Apple Guru', showroom:'Showroom · Apple Guru',
+      insights:'Journal · Apple Guru',
     };
-    document.title = titles[currentPage] ?? titles.home;
-  }, [currentPage]);
+    document.title = titles[page] ?? titles.home;
+  },[page]);
 
-  const navigate = (page: PageView) => {
-    setCurrentPage(page);
-    setLocation(page === 'home' ? '/' : `/${page}`);
-    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  const goto = (p: PageView) => {
+    setPage(p);
+    setLocation(p==='home'?'/':'/'+p);
+    window.requestAnimationFrame(()=>window.scrollTo({ top:0, behavior:'smooth' }));
   };
 
-  useEffect(() => {
-    const keydown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); setSearchOpen(true); }
-      if (e.key === 'Escape') { setSearchOpen(false); setSelectedProduct(null); setSelectedPost(null); }
+  useEffect(()=>{
+    const kd = (e: KeyboardEvent) => {
+      if ((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k') { e.preventDefault(); setSearchOpen(true); }
+      if (e.key==='Escape') { setSearchOpen(false); setSelectedProduct(null); setSelectedPost(null); }
     };
-    window.addEventListener('keydown', keydown);
-    return () => window.removeEventListener('keydown', keydown);
-  }, []);
+    window.addEventListener('keydown', kd);
+    return ()=>window.removeEventListener('keydown', kd);
+  },[]);
 
-  const page = useMemo(() => {
-    if (currentPage === 'phones') return <ProductCatalog onSelect={setSelectedProduct} onWhatsApp={openWhatsApp} />;
-    if (currentPage === 'exchange') return <ExchangePage onWhatsApp={openWhatsApp} targetProduct={targetProduct} clearTarget={() => setTargetProduct(null)} />;
-    if (currentPage === 'repair') return <RepairPage onWhatsApp={openWhatsApp} />;
-    if (currentPage === 'showroom' || currentPage === 'location') return <ShowroomPage onWhatsApp={openWhatsApp} />;
-    if (currentPage === 'insights' || currentPage === 'facts') return <JournalPage onSelect={setSelectedPost} />;
-    return <HomePage onNavigate={navigate} onWhatsApp={openWhatsApp} />;
-  }, [currentPage, targetProduct]);
+  const body = useMemo(()=>{
+    if (page==='phones')                              return <Catalog onSelect={setSelectedProduct} />;
+    if (page==='exchange')                            return <ExchangePage target={targetProduct} clearTarget={()=>setTargetProduct(null)} />;
+    if (page==='repair')                              return <RepairPage />;
+    if (page==='showroom'||page==='location')         return <ShowroomPage />;
+    if (page==='insights'||page==='facts')            return <JournalPage onSelect={setSelectedPost} />;
+    return <HomePage goto={goto} />;
+  },[page, targetProduct]);
 
   return (
-    <div className="min-h-[100dvh] bg-[#0a0a0a] text-[#f0ebe3]">
-      <Header currentPage={currentPage} onNavigate={navigate} onSearch={() => setSearchOpen(true)} />
-      <main className="page-reveal">{page}</main>
-      {currentPage !== 'home' && <Footer onNavigate={navigate} />}
+    <div style={{ minHeight:'100dvh', background:'var(--bg)', color:'var(--text-primary)' }}>
+      <Header page={page} goto={goto} openSearch={()=>setSearchOpen(true)} />
+      <main className="page-reveal">{body}</main>
+      {page!=='home' && <Footer goto={goto} />}
       <BottomNav />
+
       <ProductModal
         product={selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-        onWhatsApp={openWhatsApp}
-        onExchange={(p) => { setSelectedProduct(null); setTargetProduct(p); navigate('exchange'); }}
-        onNavigate={navigate}
+        onClose={()=>setSelectedProduct(null)}
+        onExchange={p=>{ setSelectedProduct(null); setTargetProduct(p); goto('exchange'); }}
+        goto={goto}
       />
-      <JournalModal post={selectedPost} onClose={() => setSelectedPost(null)} />
+      <JournalModal post={selectedPost} onClose={()=>setSelectedPost(null)} />
       <SearchDialog
         open={searchOpen}
-        onClose={() => setSearchOpen(false)}
+        onClose={()=>setSearchOpen(false)}
         onProduct={setSelectedProduct}
         onPost={setSelectedPost}
       />
@@ -1274,7 +1283,7 @@ function AppContent() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -1288,5 +1297,3 @@ function App() {
     </QueryClientProvider>
   );
 }
-
-export default App;
