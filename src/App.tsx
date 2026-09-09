@@ -139,15 +139,37 @@ function Header({ page, goto, openSearch }: {
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
+            {/* Search — prominent bar on desktop */}
             <button
               onClick={openSearch}
-              className="hidden md:flex items-center gap-2 rounded-full px-4 py-2 text-[13px] transition-all"
-              style={{ border:'1px solid var(--border)', color:'var(--text-secondary)' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)'; (e.currentTarget as HTMLElement).style.color='var(--blue-bright)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'; }}
+              className="hidden md:flex items-center gap-3 rounded-xl px-4 py-2.5 text-[13px] transition-all"
+              style={{
+                border: '1px solid var(--border-hover)',
+                background: 'var(--bg-raised)',
+                color: 'var(--text-secondary)',
+                minWidth: 200,
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--blue-bright)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-hover)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+              }}
             >
-              <Search size={14} /> Search
-              <kbd className="ml-1 rounded px-1.5 py-0.5 text-[10px]" style={{ border:'1px solid var(--border-hover)', color:'var(--text-muted)' }}>⌘K</kbd>
+              <Search size={14} style={{ flexShrink: 0 }} />
+              <span className="flex-1 text-left">Search devices...</span>
+              <kbd className="rounded px-1.5 py-0.5 text-[10px] font-medium" style={{ border: '1px solid var(--border-hover)', color: 'var(--text-muted)', background: 'var(--bg)' }}>⌘K</kbd>
+            </button>
+
+            {/* Mobile search icon */}
+            <button
+              onClick={openSearch}
+              className="flex md:hidden items-center justify-center rounded-full w-9 h-9"
+              style={{ border: '1px solid var(--border-hover)', color: 'var(--text-secondary)', background: 'var(--bg-raised)' }}
+            >
+              <Search size={15} />
             </button>
 
             <a
@@ -1158,80 +1180,161 @@ function SearchDialog({ open, onClose, onProduct, onPost }: {
   onProduct:(p:Product)=>void; onPost:(p:BlogPost)=>void;
 }) {
   const [q, setQ] = useState('');
-  useEffect(()=>{ if (!open) setQ(''); },[open]);
+  useEffect(() => { if (!open) setQ(''); }, [open]);
   if (!open) return null;
+
   const term = q.toLowerCase().trim();
-  const ps   = products.filter(p=>`${p.name} ${p.brand} ${p.category}`.toLowerCase().includes(term)).slice(0,5);
-  const posts = blogPosts.filter(p=>`${p.title} ${p.category}`.toLowerCase().includes(term)).slice(0,3);
+
+  // Show featured by default, filter when typing
+  const ps = term
+    ? products.filter(p => `${p.name} ${p.brand} ${p.category} ${p.tagline}`.toLowerCase().includes(term)).slice(0, 6)
+    : products.filter(p => p.featured).slice(0, 6);
+
+  const posts = term
+    ? blogPosts.filter(p => `${p.title} ${p.category} ${p.excerpt}`.toLowerCase().includes(term)).slice(0, 3)
+    : [];
+
+  const quickLinks: { label: string; sub: string; page: PageView }[] = [
+    { label: 'All Phones', sub: 'iPhone & Samsung', page: 'phones' },
+    { label: 'Exchange', sub: 'Trade in your device', page: 'exchange' },
+    { label: 'Repair', sub: 'Same-day service', page: 'repair' },
+    { label: 'Showroom', sub: 'Indra Dev Marga', page: 'showroom' },
+  ];
 
   return (
     <div
-      className="fixed inset-0 z-50 p-4"
-      style={{ background:'rgba(5,5,12,.88)', backdropFilter:'blur(12px)' }}
+      className="fixed inset-0 z-50 flex flex-col"
+      style={{ background: 'rgba(5,5,12,.92)', backdropFilter: 'blur(16px)' }}
       onClick={onClose}
     >
       <div
-        className="mx-auto mt-[8vh] max-w-2xl overflow-hidden rounded-2xl border"
-        style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}
-        onClick={e=>e.stopPropagation()}
+        className="mx-auto w-full max-w-2xl overflow-hidden rounded-2xl border mt-[6vh]"
+        style={{ background: 'var(--bg-card)', borderColor: 'var(--border-hover)' }}
+        onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center gap-3 border-b px-5 py-4" style={{ borderColor:'var(--border)' }}>
-          <Search size={16} style={{ color:'var(--blue-bright)', flexShrink:0 }} />
+        {/* Input row */}
+        <div className="flex items-center gap-3 px-5 py-4" style={{ borderBottom: '1px solid var(--border)' }}>
+          <Search size={18} style={{ color: 'var(--blue-bright)', flexShrink: 0 }} />
           <input
             autoFocus
             value={q}
-            onChange={e=>setQ(e.target.value)}
-            placeholder="Search devices, journal..."
-            className="min-h-10 flex-1 bg-transparent text-[15px] outline-none"
-            style={{ color:'var(--text-primary)' }}
+            onChange={e => setQ(e.target.value)}
+            placeholder="Search iPhone, Samsung, repair..."
+            className="flex-1 bg-transparent text-[15px] outline-none"
+            style={{ color: 'var(--text-primary)', minHeight: 36 }}
           />
-          <button onClick={onClose} style={{ color:'var(--text-muted)' }}><X size={16} /></button>
+          {q && (
+            <button onClick={() => setQ('')} style={{ color: 'var(--text-muted)' }}>
+              <X size={15} />
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="rounded-lg px-2 py-1 text-[11px] font-medium"
+            style={{ border: '1px solid var(--border-hover)', color: 'var(--text-muted)', background: 'var(--bg)' }}
+          >
+            esc
+          </button>
         </div>
-        <div className="max-h-[60vh] overflow-y-auto p-3">
-          {ps.length>0 && (
-            <>
-              <p className="mb-2 px-2 text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>Devices</p>
-              {ps.map(p=>(
-                <button
-                  key={p.id}
-                  onClick={()=>{ onClose(); onProduct(p); }}
-                  className="flex w-full items-center justify-between rounded-xl border-b px-3 py-3 text-left transition-colors hover:bg-blue-900/10"
-                  style={{ borderColor:'var(--border)' }}
-                >
-                  <span>
-                    <b className="block text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{p.name}</b>
-                    <small className="text-[12px]" style={{ color:'var(--text-muted)' }}>{p.brand} · {p.priceRange}</small>
-                  </span>
-                  <ArrowUpRight size={13} style={{ color:'var(--blue-bright)' }} />
-                </button>
-              ))}
-            </>
+
+        <div className="max-h-[65vh] overflow-y-auto scrollbar-hide">
+
+          {/* Quick links — always shown when no query */}
+          {!term && (
+            <div className="p-4">
+              <p className="mb-3 px-1 text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color: 'var(--text-muted)' }}>
+                Quick nav
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {quickLinks.map(l => (
+                  <button
+                    key={l.page}
+                    onClick={() => { onClose(); }}
+                    className="flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-all"
+                    style={{ background: 'var(--bg-raised)', border: '1px solid var(--border)' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--blue-bright)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; }}
+                  >
+                    <div>
+                      <p className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>{l.label}</p>
+                      <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{l.sub}</p>
+                    </div>
+                    <ArrowUpRight size={13} className="ml-auto" style={{ color: 'var(--blue-bright)' }} />
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
-          {posts.length>0 && (
-            <div className="mt-4">
-              <p className="mb-2 px-2 text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>Journal</p>
-              {posts.map(p=>(
+
+          {/* Devices */}
+          <div className="px-4 pb-2">
+            <p className="mb-2 px-1 pt-3 text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color: 'var(--text-muted)' }}>
+              {term ? `Devices — ${ps.length} found` : 'Featured devices'}
+            </p>
+            {ps.length > 0 ? ps.map(p => (
+              <button
+                key={p.id}
+                onClick={() => { onClose(); onProduct(p); }}
+                className="flex w-full items-center gap-4 rounded-xl px-3 py-3 text-left transition-all"
+                style={{ borderBottom: '1px solid var(--border)' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg-raised)'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
+              >
+                {/* Mini thumb */}
+                <div className="shrink-0 overflow-hidden rounded-lg" style={{ width: 40, height: 40, background: 'var(--bg-raised)' }}>
+                  <img src={imgFor(p)} alt="" className="h-full w-full object-cover" />
+                </div>
+                <span className="flex-1 min-w-0">
+                  <b className="block text-[14px] font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{p.name}</b>
+                  <small className="text-[12px]" style={{ color: 'var(--text-muted)' }}>{p.brand} · {p.priceRange}</small>
+                </span>
+                <ArrowUpRight size={13} style={{ color: 'var(--blue-bright)', flexShrink: 0 }} />
+              </button>
+            )) : term ? (
+              <p className="px-1 py-6 text-[13px]" style={{ color: 'var(--text-muted)' }}>No devices matched "{q}"</p>
+            ) : null}
+          </div>
+
+          {/* Journal results — only on search */}
+          {posts.length > 0 && (
+            <div className="border-t px-4 pb-4 pt-3" style={{ borderColor: 'var(--border)' }}>
+              <p className="mb-2 px-1 text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color: 'var(--text-muted)' }}>Journal</p>
+              {posts.map(p => (
                 <button
                   key={p.id}
-                  onClick={()=>{ onClose(); onPost(p); }}
-                  className="flex w-full items-center justify-between rounded-xl border-b px-3 py-3 text-left transition-colors hover:bg-blue-900/10"
-                  style={{ borderColor:'var(--border)' }}
+                  onClick={() => { onClose(); onPost(p); }}
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition-all"
+                  style={{ borderBottom: '1px solid var(--border)' }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg-raised)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
                 >
                   <span>
-                    <b className="block text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{p.title}</b>
-                    <small className="text-[12px]" style={{ color:'var(--text-muted)' }}>{p.category}</small>
+                    <b className="block text-[13.5px] font-semibold" style={{ color: 'var(--text-primary)' }}>{p.title}</b>
+                    <small className="text-[11.5px]" style={{ color: 'var(--text-muted)' }}>{p.category} · {p.readTime}</small>
                   </span>
-                  <ArrowUpRight size={13} style={{ color:'var(--blue-bright)' }} />
+                  <ArrowUpRight size={13} style={{ color: 'var(--blue-bright)', flexShrink: 0 }} />
                 </button>
               ))}
             </div>
           )}
-          {!ps.length && !posts.length && (
+
+          {/* Empty state */}
+          {term && !ps.length && !posts.length && (
             <div className="py-14 text-center">
-              <FileText size={22} style={{ color:'var(--blue-bright)', margin:'0 auto 12px' }} />
-              <p className="text-[14px]" style={{ color:'var(--text-muted)' }}>Nothing matched.</p>
+              <Search size={24} style={{ color: 'var(--border-hover)', margin: '0 auto 12px' }} />
+              <p className="text-[14px]" style={{ color: 'var(--text-muted)' }}>Nothing for "{q}"</p>
+              <p className="mt-2 text-[13px]" style={{ color: 'var(--text-muted)' }}>
+                Try "iPhone 15", "Samsung", "repair", "exchange"
+              </p>
             </div>
           )}
+        </div>
+
+        {/* Footer hint */}
+        <div className="flex items-center gap-4 border-t px-5 py-3 text-[11px]" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+          <span><kbd className="rounded px-1 py-0.5" style={{ border: '1px solid var(--border-hover)' }}>↵</kbd> open</span>
+          <span><kbd className="rounded px-1 py-0.5" style={{ border: '1px solid var(--border-hover)' }}>↑↓</kbd> navigate</span>
+          <span className="ml-auto">10,000+ customers in Chitwan</span>
         </div>
       </div>
     </div>
