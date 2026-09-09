@@ -109,7 +109,7 @@ function Header({ page, goto, openSearch }: {
   return (
     <>
       {/* Devanagari micro-bar */}
-      <div className="w-full border-b deva-bar text-center py-1.5" style={{ borderColor:'var(--border)', background:'var(--bg)' }}>
+      <div className="w-full border-b deva-bar text-center py-1.5" style={{ borderColor:'var(--border)', background:'var(--bg)', color:'var(--text-muted)' }}>
         चितवनको सर्वोत्तम Apple र Samsung स्टोर — Indra Dev Marga, Bharatpur
       </div>
 
@@ -230,7 +230,7 @@ function Ticker() {
   ];
   const doubled = [...items,...items];
   return (
-    <div className="overflow-hidden border-y py-3" style={{ borderColor:'var(--border)', background:'var(--bg-card)' }}>
+    <div className="overflow-hidden border-y py-3" style={{ borderColor:'var(--border)', background:'var(--bg)' }}>
       <div className="ticker-track">
         {doubled.map((t,i) => (
           <span key={i} className="flex items-center gap-5 px-5 text-[11.5px] font-medium tracking-[.09em] uppercase" style={{ color:'var(--text-muted)' }}>
@@ -280,36 +280,52 @@ const slides: Slide[] = [
 function Hero({ goto }: { goto: (p: PageView) => void }) {
   const [idx,     setIdx]     = useState(0);
   const [prog,    setProg]    = useState(0);
-  const [paused,  setPaused]  = useState(false);
   const [playing, setPlaying] = useState(true);
-  const touchX = useRef<number|null>(null);
+  const touchX  = useRef<number|null>(null);
+  const paused  = useRef(false);
+  const ivRef   = useRef<ReturnType<typeof setInterval>|null>(null);
+  const idxRef  = useRef(0);
   const DURATION = 3000;
-  const s = slides[idx];
 
-  useEffect(() => {
-    if (!playing || paused) return;
+  const startTimer = () => {
+    if (ivRef.current) clearInterval(ivRef.current);
     const t0 = Date.now();
-    let advanced = false;
-    const iv = setInterval(() => {
+    ivRef.current = setInterval(() => {
+      if (paused.current) return;
       const pct = Math.min(100, ((Date.now()-t0)/DURATION)*100);
       setProg(pct);
-      if (pct >= 100 && !advanced) {
-        advanced = true;
-        setIdx(v => (v+1)%slides.length);
+      if (pct >= 100) {
+        const next = (idxRef.current + 1) % slides.length;
+        idxRef.current = next;
+        setIdx(next);
         setProg(0);
+        startTimer();
       }
-    }, 50);
-    return () => clearInterval(iv);
-  }, [idx, paused, playing]);
+    }, 40);
+  };
 
-  const jump = (i: number) => { setIdx((i+slides.length)%slides.length); setProg(0); };
+  useEffect(() => {
+    if (playing) startTimer();
+    else { if (ivRef.current) clearInterval(ivRef.current); }
+    return () => { if (ivRef.current) clearInterval(ivRef.current); };
+  }, [playing]);
+
+  const jump = (i: number) => {
+    const n = (i + slides.length) % slides.length;
+    idxRef.current = n;
+    setIdx(n);
+    setProg(0);
+    if (playing) startTimer();
+  };
+
+  const s = slides[idx];
 
   return (
     <section
-      className="relative overflow-hidden"
+      className="relative overflow-hidden hero-grain"
       style={{ minHeight:'min(760px,94dvh)' }}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseEnter={() => { paused.current = true; }}
+      onMouseLeave={() => { paused.current = false; }}
       onTouchStart={e => { touchX.current = e.touches[0]?.clientX ?? null; }}
       onTouchEnd={e => {
         if (touchX.current===null) return;
@@ -383,7 +399,7 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
               {[
                 { icon:<ArrowLeft size={16}/>, fn:()=>jump(idx-1), label:'Prev' },
                 { icon:<ArrowRight size={16}/>, fn:()=>jump(idx+1), label:'Next' },
-                { icon: playing ? <Pause size={14}/> : <Play size={14}/>, fn:()=>setPlaying(v=>!v), label:playing?'Pause':'Play' },
+                { icon: playing ? <Pause size={14}/> : <Play size={14}/>, fn:()=>setPlaying(v=>!v), label: playing ? 'Pause' : 'Play' },
               ].map(({ icon, fn, label }) => (
                 <button
                   key={label}
@@ -454,10 +470,12 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
       <div className="mb-10">
+        <p className="mb-3 text-[11px] font-semibold tracking-[.12em] uppercase" style={{ color:'var(--text-muted)' }}>What we do</p>
         <h2 className="font-serif" style={{ fontSize:'clamp(2rem,4.5vw,3.5rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
           Everything you need.<br />
           <span style={{ color:'var(--blue-bright)' }}>One place.</span>
         </h2>
+        <div className="line-accent mt-6" style={{ maxWidth:280 }} />
       </div>
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:grid-rows-2">
         {/* Large tile */}
@@ -564,9 +582,13 @@ function GalleryStrip() {
   const imgs = [imgUser1,imgUser2,imgUser3,imgUser4,imgUser5,imgUser1,imgUser2];
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
-      <h2 className="mb-8 font-serif" style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-        Real devices.<br /><span style={{ color:'var(--blue-bright)' }}>Real people.</span>
-      </h2>
+      <div className="mb-8">
+        <p className="mb-3 text-[11px] font-semibold tracking-[.12em] uppercase" style={{ color:'var(--text-muted)' }}>At the showroom</p>
+        <h2 className="font-serif" style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+          Real devices.<br /><span style={{ color:'var(--blue-bright)' }}>Real people.</span>
+        </h2>
+        <div className="line-accent mt-5" style={{ maxWidth:200 }} />
+      </div>
       <div className="scrollbar-hide flex gap-3 overflow-x-auto pb-2">
         {imgs.map((src,i) => (
           <div key={i} className="shrink-0 overflow-hidden rounded-xl" style={{ width:176, height:224 }}>
