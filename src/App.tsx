@@ -289,11 +289,16 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
   useEffect(() => {
     if (!playing || paused) return;
     const t0 = Date.now();
+    let advanced = false;
     const iv = setInterval(() => {
       const pct = Math.min(100, ((Date.now()-t0)/DURATION)*100);
       setProg(pct);
-      if (pct >= 100) { setIdx(v => (v+1)%slides.length); setProg(0); }
-    }, 60);
+      if (pct >= 100 && !advanced) {
+        advanced = true;
+        setIdx(v => (v+1)%slides.length);
+        setProg(0);
+      }
+    }, 50);
     return () => clearInterval(iv);
   }, [idx, paused, playing]);
 
