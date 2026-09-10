@@ -269,6 +269,11 @@ function Ticker() {
 }
 
 // ── Campaign Hero ─────────────────────────────────────────────────────────────
+// Computed once at module load — touch devices apply a sticky :hover state
+// after tap in many mobile browsers, so hover-pause must be desktop-only.
+const IS_TOUCH_DEVICE = typeof window !== 'undefined' &&
+  ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
 type Slide = {
   tag: string; title: string; accent: string;
   body: string; cta: string; img: string;
@@ -306,17 +311,23 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
   const [idx,     setIdx]     = useState(0);
   const [prog,    setProg]    = useState(0);
   const [playing, setPlaying] = useState(true);
-  const touchX  = useRef<number|null>(null);
-  const paused  = useRef(false);
-  const ivRef   = useRef<ReturnType<typeof setInterval>|null>(null);
-  const idxRef  = useRef(0);
+  const touchX     = useRef<number|null>(null);
+  const ivRef      = useRef<ReturnType<typeof setInterval>|null>(null);
+  const idxRef     = useRef(0);
+  const sectionRef = useRef<HTMLElement|null>(null);
   const DURATION = 3000;
 
   const startTimer = () => {
     if (ivRef.current) clearInterval(ivRef.current);
     const t0 = Date.now();
     ivRef.current = setInterval(() => {
-      if (paused.current) return;
+      // Checked live every tick instead of tracked via paired mouseenter/
+      // mouseleave events — those events can fail to fire in pairs (fast
+      // mouse movement, overlapping fixed elements like the WhatsApp
+      // button, alt-tab, drag), which was leaving the slideshow paused
+      // forever with nothing to un-stick it. A live :hover check can't
+      // get stuck — it self-corrects on the very next tick.
+      if (!IS_TOUCH_DEVICE && sectionRef.current?.matches(':hover')) return;
       const pct = Math.min(100, ((Date.now()-t0)/DURATION)*100);
       setProg(pct);
       if (pct >= 100) {
@@ -344,22 +355,13 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
   };
 
   const s = slides[idx];
-  // Touch devices fire a synthetic "mouseenter" on tap with no matching
-  // "mouseleave" — that permanently paused.current = true, which is why the
-  // slideshow looked stuck/glitched on phones. Hover-pause is desktop-only.
-  const isTouchDevice = typeof window !== 'undefined' &&
-    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
   return (
     <section
+      ref={sectionRef}
       className="relative overflow-hidden hero-grain"
       style={{ minHeight:'min(760px,94dvh)' }}
-      onMouseEnter={() => { if (!isTouchDevice) paused.current = true; }}
-      onMouseLeave={() => { if (!isTouchDevice) paused.current = false; }}
-      onTouchStart={e => {
-        paused.current = false;
-        touchX.current = e.touches[0]?.clientX ?? null;
-      }}
+      onTouchStart={e => { touchX.current = e.touches[0]?.clientX ?? null; }}
       onTouchEnd={e => {
         if (touchX.current===null) return;
         const d=(e.changedTouches[0]?.clientX??0)-touchX.current;
