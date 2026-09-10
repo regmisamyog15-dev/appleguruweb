@@ -689,15 +689,25 @@ function Catalog({ onSelect }: { onSelect:(p:Product)=>void }) {
 
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
-      <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-5">
+      <div style={{ maxWidth:640 }}>
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Catalog</span>
+        <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+          Find your<br /><span style={{ color:'var(--blue-bright)' }}>next device.</span>
+        </h1>
+        <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
+          Every iPhone, Galaxy, and accessory we carry — genuine stock, honest pricing, and every device available to try in the Bharatpur showroom.
+        </p>
+      </div>
+
+      <div className="scrollbar-hide mt-11 flex gap-2 overflow-x-auto pb-5">
         {tabs.map(t => (
           <button key={t} onClick={()=>setFilter(t)} className={`chip ${filter===t?'active':''}`}>{t}</button>
         ))}
       </div>
       <div className="mb-8 flex items-end justify-between border-b pb-5" style={{ borderColor:'var(--border)' }}>
-        <h1 className="font-serif" style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+        <h2 className="font-serif text-[1.4rem]" style={{ letterSpacing:'-.02em', color:'var(--text-primary)' }}>
           {headings[filter]}
-        </h1>
+        </h2>
         <span className="text-[12px]" style={{ color:'var(--text-muted)' }}>{filtered.length} devices</span>
       </div>
       {filtered.length ? (
