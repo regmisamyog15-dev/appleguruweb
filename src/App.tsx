@@ -5,7 +5,7 @@ import { useScrollReveal } from './hooks/use-scroll-reveal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   ArrowRight, ArrowUpRight, ArrowLeft, Check, ChevronDown, CircleHelp,
-  FileText, MapPin, Menu, MessageCircle, Minus, Phone, Plus, Search,
+  FileText, MapPin, Menu, MessageCircle, Minus, Package, Phone, Plus, Search,
   X, Wrench, Smartphone, Navigation, Clock3, RefreshCw, Pause, Play,
   Sparkles, Watch
 } from 'lucide-react';
@@ -715,7 +715,7 @@ function Catalog({ onSelect }: { onSelect:(p:Product)=>void }) {
 }
 
 // ── Exchange page ─────────────────────────────────────────────────────────────
-function ExchangePage({ target, clearTarget }: { target:Product|null; clearTarget:()=>void }) {
+function ExchangePage({ target, clearTarget, onOpenGuide }: { target:Product|null; clearTarget:()=>void; onOpenGuide:()=>void }) {
   const models = [
     'iPhone 17 Pro Max','iPhone Air','iPhone 15 Pro Max','iPhone 15 Pro',
     'iPhone 15','iPhone 14 Pro Max','iPhone 14','iPhone 13 Pro Max',
@@ -782,6 +782,13 @@ function ExchangePage({ target, clearTarget }: { target:Product|null; clearTarge
         <div>
           <h2 className="font-serif text-[1.5rem]" style={{ color:'var(--text-primary)' }}>Value estimator</h2>
           <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-muted)' }}>Pick your device and its condition below for a ballpark number — not a final price.</p>
+          <button
+            onClick={onOpenGuide}
+            className="mt-2 inline-flex items-center gap-1 text-[12.5px] font-semibold underline underline-offset-2"
+            style={{ color:'var(--blue-bright)' }}
+          >
+            How we calculate your trade-in value <ArrowRight size={12} />
+          </button>
 
           <label className="mt-7 block text-[13px] font-semibold" style={{ color:'var(--text-secondary)' }}>Your current device</label>
           <div className="relative mt-2">
@@ -836,21 +843,29 @@ function ExchangePage({ target, clearTarget }: { target:Product|null; clearTarge
           </div>
 
           <p className="mt-6 text-[12px] font-semibold uppercase tracking-[.08em]" style={{ color:'var(--text-muted)' }}>Your estimate</p>
-          <p className="mt-2 font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--text-primary)' }}>
-            Rs. {lo.toLocaleString()} <span className="text-[13px] font-sans font-normal" style={{ color:'var(--text-muted)' }}>(if issues found)</span>
+          <p className="mt-2 font-serif" style={{ fontSize:'2.5rem', lineHeight:1.05, letterSpacing:'-.02em' }}>
+            <span style={{ color:'var(--text-primary)' }}>Rs. {lo.toLocaleString()}</span>
+            <span style={{ color:'var(--text-muted)' }}> – </span>
+            <span style={{ color:'var(--blue-bright)' }}>Rs. {hi.toLocaleString()}</span>
           </p>
-          <p className="font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--blue-bright)' }}>
-            – Rs. {hi.toLocaleString()} <span className="text-[13px] font-sans font-normal" style={{ color:'var(--text-muted)' }}>(if clean)</span>
+          <p className="mt-2 text-[12.5px] leading-5" style={{ color:'var(--text-muted)' }}>
+            Lower end if the in-store check finds issues, higher end if it's fully clean.
           </p>
-          <div className="mt-4 rounded-xl border p-4 text-[13px] leading-6" style={{ borderColor:'var(--blue)', background:'var(--blue-dim)', color:'var(--text-secondary)' }}>
-            <strong style={{ color:'var(--text-primary)' }}>Not a final price.</strong> This range is a starting guide based on the model and condition you picked above. We'll physically check your screen, battery health, and body condition in-store before confirming what we'll actually pay you.
-          </div>
-          <p className="mt-4 text-[13px] leading-6" style={{ color:'var(--text-secondary)' }}>
-            Bring your device, its original box if available, and any cables. Our team does the rest.
-          </p>
-          <div className="mt-3 rounded-xl border p-4 text-[13px]" style={{ borderColor:'var(--border)', background:'var(--bg-raised)', color:'var(--text-secondary)' }}>
-            <CircleHelp size={13} className="mr-2 inline" style={{ color:'var(--blue-bright)' }} />
-            Original parts and unaltered pairing can add up to 25% more value.
+
+          {/* Single consolidated info panel — was 3 separate stacked boxes */}
+          <div className="mt-6 space-y-3.5 rounded-xl border p-4 text-[13px] leading-6" style={{ borderColor:'var(--border)', background:'var(--bg-raised)', color:'var(--text-secondary)' }}>
+            <div className="flex gap-2.5">
+              <CircleHelp size={15} className="mt-0.5 shrink-0" style={{ color:'var(--blue-bright)' }} />
+              <span><strong style={{ color:'var(--text-primary)' }}>Not a final price</strong> — we confirm the exact amount after checking your screen, battery health, and body condition in-store.</span>
+            </div>
+            <div className="flex gap-2.5">
+              <Package size={15} className="mt-0.5 shrink-0" style={{ color:'var(--blue-bright)' }} />
+              <span>Bring your device, its original box if available, and any cables. Our team does the rest.</span>
+            </div>
+            <div className="flex gap-2.5">
+              <Sparkles size={15} className="mt-0.5 shrink-0" style={{ color:'var(--blue-bright)' }} />
+              <span>Original parts and unaltered pairing can add up to 25% more value.</span>
+            </div>
           </div>
           {target && (
             <div className="mt-5 rounded-xl border p-4" style={{ borderColor:'var(--blue)', background:'var(--blue-dim)' }}>
@@ -1164,6 +1179,15 @@ function ProductModal({ product, onClose, onExchange, goto }: {
 }
 
 // ── Journal modal ─────────────────────────────────────────────────────────────
+// Renders **bold** segments inside blog paragraph strings as <strong>.
+function renderInlineBold(text: string) {
+  return text.split(/(\*\*.+?\*\*)/g).map((chunk, i) =>
+    chunk.startsWith('**') && chunk.endsWith('**')
+      ? <strong key={i} style={{ color:'var(--text-primary)' }}>{chunk.slice(2, -2)}</strong>
+      : <span key={i}>{chunk}</span>
+  );
+}
+
 function JournalModal({ post, onClose }: { post:BlogPost|null; onClose:()=>void }) {
   if (!post) return null;
   return (
@@ -1191,7 +1215,7 @@ function JournalModal({ post, onClose }: { post:BlogPost|null; onClose:()=>void 
         </p>
         <div className="mt-7 space-y-5">
           {post.content.map((para,i)=>(
-            <p key={i} className="text-[14.5px] leading-8" style={{ color:'var(--text-secondary)' }}>{para}</p>
+            <p key={i} className="text-[14.5px] leading-8" style={{ color:'var(--text-secondary)' }}>{renderInlineBold(para)}</p>
           ))}
         </div>
       </article>
@@ -1423,7 +1447,7 @@ function AppContent() {
 
   const body = useMemo(()=>{
     if (page==='phones')                              return <Catalog onSelect={setSelectedProduct} />;
-    if (page==='exchange')                            return <ExchangePage target={targetProduct} clearTarget={()=>setTargetProduct(null)} />;
+    if (page==='exchange')                            return <ExchangePage target={targetProduct} clearTarget={()=>setTargetProduct(null)} onOpenGuide={()=>setSelectedPost(blogPosts.find(p=>p.slug==='how-phone-exchange-works-chitwan')||null)} />;
     if (page==='repair')                              return <RepairPage />;
     if (page==='showroom'||page==='location')         return <ShowroomPage />;
     if (page==='insights'||page==='facts')            return <JournalPage onSelect={setSelectedPost} />;

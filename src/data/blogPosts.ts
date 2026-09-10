@@ -24,20 +24,33 @@ export const blogPosts: BlogPost[] = [
   {
     id: 'how-phone-exchange-works-chitwan',
     slug: 'how-phone-exchange-works-chitwan',
-    title: 'How Phone Exchange Works: What Determines Your Device’s Trade-In Value?',
+    title: 'Phone Exchange in Chitwan: The Complete Guide to Trade-In Value',
     category: 'Exchange',
-    excerpt: 'Upgrading doesn’t have to mean leaving your old device in a drawer. Discover the exact physical and electronic metrics Apple Guru assesses to calculate your exchange credit.',
-    readTime: '5 min read',
-    date: 'January 2025',
+    excerpt: 'How does phone exchange actually work? Here is the full walkthrough — what we inspect, how your trade-in value is calculated, and exactly how it gets deducted from your new phone.',
+    readTime: '8 min read',
+    date: 'September 2026',
     author: 'Apple Guru Trade-In Lab',
     coverImage: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?q=80&w=1200&auto=format&fit=crop',
-    tags: ['Trade-In', 'Phone Exchange', 'Bharatpur', 'Smart Upgrade'],
-    keyTakeaway: 'Screen condition, genuine battery health, and original functional Face ID/fingerprint sensors are the three biggest factors that preserve your phone’s maximum resale value.',
+    tags: ['Phone Exchange Nepal', 'Trade-In Value', 'iPhone Exchange Bharatpur', 'Chitwan Tech', 'Sell Old iPhone'],
+    keyTakeaway: 'Your old phone is inspected in four areas — screen, housing, functional diagnostics, and battery health. The resulting trade-in value is applied as an upfront credit, directly reducing what you pay for your new device.',
     content: [
-      'The modern smartphone exchange program at Apple Guru is engineered to be transparent, fast, and mathematically grounded in live secondary market valuations.',
-      'When you bring your phone into our Indra Dev Marga showroom, our technician begins with a 4-point assessment: Screen & OLED Integrity (checking for scratches, burns, or touch deadzones), Housing & Frame Grade (examining corners for drop impacts), Functional Diagnostics (Face ID, cameras, speakers, Wi-Fi, and charging IC), and Battery Condition.',
-      'Original parts carry a heavy premium. A device with its original display and unaltered serial pairings commands up to 25% more trade-in value than one with third-party replacement screens.',
-      'Once verified, your appraisal is immediately applied as an upfront credit towards any new Apple, Samsung, or flagship smartphone in our showroom. We also assist with safe, encrypted end-to-end data migration right on the spot.'
+      'If you have an old iPhone, Galaxy, or other flagship sitting in a drawer, phone exchange lets you trade it straight into the cost of your next device instead of selling it separately or letting it lose more value while it sits unused. This guide walks through exactly how the process works at Apple Guru in Chitwan — what we check, how we arrive at a number, and how that number is actually deducted from your purchase.',
+
+      '**Step 1: Bring the device in, no appointment needed.** You can walk into our Indra Dev Marga showroom in Bharatpur with your current phone in whatever condition it is in — working, cracked, slow, battery struggling, doesn\'t matter. There is no cost and no obligation to the assessment itself. If you decide not to proceed, you keep your phone and walk out.',
+
+      '**Step 2: The four-point physical and functional assessment.** Our technician examines your device across four areas. First, screen and display integrity — checking for cracks, dead pixels, touch dead-zones, and burn-in. Second, housing and frame condition — corners and edges are checked for drop damage and bends, since a cracked frame affects resale value even when the screen is fine. Third, functional diagnostics — Face ID or fingerprint sensor, front and rear cameras, speakers and microphones, Wi-Fi, and the charging port and IC are all tested live in front of you. Fourth, battery health — we check the actual battery capacity percentage (not just whether it turns on), since a phone at 65% battery health is worth meaningfully less than one at 90%+.',
+
+      '**Step 3: How the value is calculated.** Every model has a base trade-in value for like-new condition, built from current resale market rates for that specific model and storage size. From that base, we apply deductions for whatever the four-point check finds — a cracked screen, a replaced non-original part, a swollen or degraded battery, or heavy cosmetic wear each reduce the value by a set percentage. This is the same logic behind the price estimator on our Exchange page: it gives you a realistic range up front, with the final number confirmed only after the in-person check.',
+
+      'A note on original parts. If your screen, battery, and back glass are all original Apple or Samsung parts (never swapped for third-party replacements), your device qualifies for the top of its condition bracket — original, unaltered devices can be worth up to 25% more than an otherwise-identical phone with aftermarket parts, because we can resell or refurbish them with full confidence in their authenticity.',
+
+      '**Step 4: The value is deducted directly from your new purchase.** Once you agree to the assessed value, it is applied immediately as a credit against the price of the new iPhone, Galaxy, or accessory you are buying — you only pay the difference. For example, if your new phone costs Rs. 175,000 and your old device is valued at Rs. 60,000, you pay Rs. 115,000 on the spot. There is no separate payout, no waiting period, and no need to sell your old phone elsewhere first.',
+
+      'Your data is handled safely throughout. Before your old device changes hands, our team helps you back up and transfer your photos, contacts, and app data to your new phone, then performs a secure factory reset so nothing personal remains on the traded-in device.',
+
+      '**Frequently asked questions.** Do I need the original box? No — it is not required, though having it (along with the charger cable) can modestly help the assessed value. What if my screen is cracked but everything else works? You can still trade it in; a cracked screen simply moves the device into a lower condition bracket rather than disqualifying it. Can I trade in a non-Apple phone? Yes — we accept Samsung Galaxy and other major flagship Android devices toward any new purchase in-store. What if I just want to sell it, not upgrade? Ask our team — depending on the model, a straight buy-back may also be possible.',
+
+      'If you are ready to see what your device is worth, use the value estimator on our Exchange page for an instant ballpark range, then bring it into the Bharatpur showroom for the real number — most assessments take under 15 minutes.'
     ]
   },
   {
