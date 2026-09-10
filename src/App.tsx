@@ -16,6 +16,7 @@ import { blogPosts } from './data/blogPosts';
 import { products, priceDisclaimer } from './data/products';
 import { repairServices } from './data/repairServices';
 import type { BlogPost, PageView, Product } from './types';
+import iphone16Pro    from '../reference/assets/iphone16-pro.png';
 import iphone15Pro    from '../reference/assets/iphone15-pro.png';
 import iphone14Pro    from '../reference/assets/iphone14-pro.png';
 import iphone15ProMax from '../reference/assets/iphone15-pro-max.png';
@@ -53,6 +54,7 @@ const navItems: { id: PageView; label: string }[] = [
 
 // per-product image overrides (use real photos where we have them)
 const localImages: Record<string, string> = {
+  'iphone-16-pro':     iphone16Pro,
   'iphone-15-pro':     iphone15Pro,
   'iphone-14-pro-max': iphone14Pro,
   'iphone-15-pro-max': iphone15ProMax,
@@ -126,7 +128,7 @@ function Header({ page, goto, openSearch }: {
           <button onClick={() => go('home')}><Logo /></button>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden flex-1 items-center justify-center gap-9 md:flex">
             {navItems.map(item => (
               <button
                 key={item.id}
@@ -342,14 +344,22 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
   };
 
   const s = slides[idx];
+  // Touch devices fire a synthetic "mouseenter" on tap with no matching
+  // "mouseleave" — that permanently paused.current = true, which is why the
+  // slideshow looked stuck/glitched on phones. Hover-pause is desktop-only.
+  const isTouchDevice = typeof window !== 'undefined' &&
+    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
   return (
     <section
       className="relative overflow-hidden hero-grain"
       style={{ minHeight:'min(760px,94dvh)' }}
-      onMouseEnter={() => { paused.current = true; }}
-      onMouseLeave={() => { paused.current = false; }}
-      onTouchStart={e => { touchX.current = e.touches[0]?.clientX ?? null; }}
+      onMouseEnter={() => { if (!isTouchDevice) paused.current = true; }}
+      onMouseLeave={() => { if (!isTouchDevice) paused.current = false; }}
+      onTouchStart={e => {
+        paused.current = false;
+        touchX.current = e.touches[0]?.clientX ?? null;
+      }}
       onTouchEnd={e => {
         if (touchX.current===null) return;
         const d=(e.changedTouches[0]?.clientX??0)-touchX.current;
@@ -781,7 +791,7 @@ function ExchangePage({ target, clearTarget }: { target:Product|null; clearTarge
       <div className="mt-10 grid gap-6 rounded-2xl border p-6 md:grid-cols-2 md:p-10" style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}>
         <div>
           <h2 className="font-serif text-[1.5rem]" style={{ color:'var(--text-primary)' }}>Value estimator</h2>
-          <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-muted)' }}>Rough guide only — final value assessed in store.</p>
+          <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-muted)' }}>Pick your device and its condition below for a ballpark number — not a final price.</p>
 
           <label className="mt-7 block text-[13px] font-semibold" style={{ color:'var(--text-secondary)' }}>Your current device</label>
           <div className="relative mt-2">
@@ -814,17 +824,23 @@ function ExchangePage({ target, clearTarget }: { target:Product|null; clearTarge
         </div>
 
         <div className="border-t pt-6 md:border-l md:border-t-0 md:pl-10 md:pt-0" style={{ borderColor:'var(--border)' }}>
-          <h3 className="text-[13px] font-medium" style={{ color:'var(--text-muted)' }}>Working estimate</h3>
+          <h3 className="text-[13px] font-medium" style={{ color:'var(--text-muted)' }}>Estimated trade-in range</h3>
+          <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-secondary)' }}>
+            For your <strong style={{ color:'var(--text-primary)' }}>{model}</strong> · {cond.label}
+          </p>
           <p className="mt-5 font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--text-primary)' }}>
             Rs. {lo.toLocaleString()}
           </p>
           <p className="font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--blue-bright)' }}>
             – Rs. {hi.toLocaleString()}
           </p>
+          <div className="mt-4 rounded-xl border p-4 text-[13px] leading-6" style={{ borderColor:'var(--blue)', background:'var(--blue-dim)', color:'var(--text-secondary)' }}>
+            <strong style={{ color:'var(--text-primary)' }}>Not a final price.</strong> This range is a starting guide based on the model and condition you picked. We'll physically check your screen, battery health, and body condition in-store before confirming what we'll actually pay.
+          </div>
           <p className="mt-4 text-[13px] leading-6" style={{ color:'var(--text-secondary)' }}>
             Bring your device, its original box if available, and any cables. Our team does the rest.
           </p>
-          <div className="mt-5 rounded-xl border p-4 text-[13px]" style={{ borderColor:'var(--border)', background:'var(--bg-raised)', color:'var(--text-secondary)' }}>
+          <div className="mt-3 rounded-xl border p-4 text-[13px]" style={{ borderColor:'var(--border)', background:'var(--bg-raised)', color:'var(--text-secondary)' }}>
             <CircleHelp size={13} className="mr-2 inline" style={{ color:'var(--blue-bright)' }} />
             Original parts and unaltered pairing can add up to 25% more value.
           </div>
