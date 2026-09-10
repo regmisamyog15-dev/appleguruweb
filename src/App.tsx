@@ -269,11 +269,6 @@ function Ticker() {
 }
 
 // ── Campaign Hero ─────────────────────────────────────────────────────────────
-// Computed once at module load — touch devices apply a sticky :hover state
-// after tap in many mobile browsers, so hover-pause must be desktop-only.
-const IS_TOUCH_DEVICE = typeof window !== 'undefined' &&
-  ('ontouchstart' in window || navigator.maxTouchPoints > 0);
-
 type Slide = {
   tag: string; title: string; accent: string;
   body: string; cta: string; img: string;
@@ -314,20 +309,12 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
   const touchX     = useRef<number|null>(null);
   const ivRef      = useRef<ReturnType<typeof setInterval>|null>(null);
   const idxRef     = useRef(0);
-  const sectionRef = useRef<HTMLElement|null>(null);
   const DURATION = 3000;
 
   const startTimer = () => {
     if (ivRef.current) clearInterval(ivRef.current);
     const t0 = Date.now();
     ivRef.current = setInterval(() => {
-      // Checked live every tick instead of tracked via paired mouseenter/
-      // mouseleave events — those events can fail to fire in pairs (fast
-      // mouse movement, overlapping fixed elements like the WhatsApp
-      // button, alt-tab, drag), which was leaving the slideshow paused
-      // forever with nothing to un-stick it. A live :hover check can't
-      // get stuck — it self-corrects on the very next tick.
-      if (!IS_TOUCH_DEVICE && sectionRef.current?.matches(':hover')) return;
       const pct = Math.min(100, ((Date.now()-t0)/DURATION)*100);
       setProg(pct);
       if (pct >= 100) {
@@ -358,7 +345,6 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
 
   return (
     <section
-      ref={sectionRef}
       className="relative overflow-hidden hero-grain"
       style={{ minHeight:'min(760px,94dvh)' }}
       onTouchStart={e => { touchX.current = e.touches[0]?.clientX ?? null; }}
@@ -385,22 +371,24 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
       <div className="blue-glow" style={{ width:420, height:420, top:'15%', right:'30%', opacity:.22 }} />
 
       {/* Content */}
-      <div className="relative mx-auto flex flex-col justify-between px-5 md:px-12 max-w-[1440px]"
+      <div className="relative mx-auto flex flex-col px-5 md:px-12 max-w-[1440px]"
         style={{ minHeight:'min(760px,94dvh)', paddingTop:64, paddingBottom:40 }}>
 
-        {/* Tag */}
-        <div className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background:'var(--blue-bright)' }} />
-          <span key={`tag-${idx}`} className="page-reveal text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>
-            {s.tag}
-          </span>
-        </div>
+        {/* Text cluster — grouped and vertically centered, like Apple's own
+            hero banners, instead of being spread across the full height */}
+        <div className="flex flex-1 flex-col justify-center" style={{ maxWidth:680 }}>
+          {/* Tag */}
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background:'var(--blue-bright)' }} />
+            <span key={`tag-${idx}`} className="page-reveal text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>
+              {s.tag}
+            </span>
+          </div>
 
-        {/* Headline */}
-        <div style={{ maxWidth:680 }}>
+          {/* Headline */}
           <h1
             key={`h-${idx}`}
-            className="page-reveal font-serif"
+            className="page-reveal font-serif mt-5"
             style={{ fontSize:'clamp(2.8rem,6.5vw,6rem)', lineHeight:.96, letterSpacing:'-.03em', color:'var(--text-primary)' }}
           >
             {s.title}<br />
@@ -427,8 +415,8 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
           </div>
         </div>
 
-        {/* Controls */}
-        <div>
+        {/* Controls — pinned to the bottom, separate from the text cluster */}
+        <div className="mt-10">
           <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {[
@@ -830,14 +818,32 @@ function ExchangePage({ target, clearTarget }: { target:Product|null; clearTarge
           <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-secondary)' }}>
             For your <strong style={{ color:'var(--text-primary)' }}>{model}</strong> · {cond.label}
           </p>
-          <p className="mt-5 font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--text-primary)' }}>
+
+          {/* Breakdown — shows how the range was built, not just the result */}
+          <div className="mt-6 space-y-3 rounded-xl border p-4 text-[13px]" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
+            <div className="flex items-center justify-between gap-4">
+              <span style={{ color:'var(--text-secondary)' }}>Base value, like-new condition</span>
+              <span className="shrink-0 font-medium" style={{ color:'var(--text-primary)' }}>
+                Rs. {base[0].toLocaleString()} – {base[1].toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span style={{ color:'var(--text-secondary)' }}>Adjusted for "{cond.label}"</span>
+              <span className="shrink-0 font-medium" style={{ color: cond.mult<1 ? 'var(--blue-bright)' : 'var(--text-primary)' }}>
+                {cond.mult===1 ? 'No deduction' : `${Math.round((1-cond.mult)*100)}% off`}
+              </span>
+            </div>
+          </div>
+
+          <p className="mt-6 text-[12px] font-semibold uppercase tracking-[.08em]" style={{ color:'var(--text-muted)' }}>Your estimate</p>
+          <p className="mt-2 font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--text-primary)' }}>
             Rs. {lo.toLocaleString()}
           </p>
           <p className="font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--blue-bright)' }}>
             – Rs. {hi.toLocaleString()}
           </p>
           <div className="mt-4 rounded-xl border p-4 text-[13px] leading-6" style={{ borderColor:'var(--blue)', background:'var(--blue-dim)', color:'var(--text-secondary)' }}>
-            <strong style={{ color:'var(--text-primary)' }}>Not a final price.</strong> This range is a starting guide based on the model and condition you picked. We'll physically check your screen, battery health, and body condition in-store before confirming what we'll actually pay.
+            <strong style={{ color:'var(--text-primary)' }}>Not a final price.</strong> This range is a starting guide based on the model and condition you picked above. We'll physically check your screen, battery health, and body condition in-store before confirming what we'll actually pay you.
           </div>
           <p className="mt-4 text-[13px] leading-6" style={{ color:'var(--text-secondary)' }}>
             Bring your device, its original box if available, and any cables. Our team does the rest.
