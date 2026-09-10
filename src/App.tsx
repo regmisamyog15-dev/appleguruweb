@@ -1,6 +1,7 @@
 import {
   type ReactNode, useEffect, useMemo, useState, useRef, type TouchEvent
 } from 'react';
+import { useScrollReveal } from './hooks/use-scroll-reveal';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   ArrowRight, ArrowUpRight, ArrowLeft, Check, ChevronDown, CircleHelp,
@@ -1357,6 +1358,7 @@ function HomePage({ goto }: { goto:(p:PageView)=>void }) {
 
 // ── App shell ─────────────────────────────────────────────────────────────────
 function AppContent() {
+  useScrollReveal();
   const [page,            setPage]            = useState<PageView>('home');
   const [selectedProduct, setSelectedProduct] = useState<Product|null>(null);
   const [selectedPost,    setSelectedPost]    = useState<BlogPost|null>(null);
