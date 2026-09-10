@@ -492,7 +492,7 @@ const bentoItems = [
 function HomeBento({ goto }: { goto: (p: PageView) => void }) {
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
-      <div className="mb-10">
+      <div className="reveal mb-10">
         <p className="mb-3 text-[11px] font-semibold tracking-[.12em] uppercase" style={{ color:'var(--text-muted)' }}>What we do</p>
         <h2 className="font-serif" style={{ fontSize:'clamp(2rem,4.5vw,3.5rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
           Everything you need.<br />
@@ -500,11 +500,11 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
         </h2>
         <div className="line-accent mt-6" style={{ maxWidth:280 }} />
       </div>
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:grid-rows-2">
+      <div className="stagger grid grid-cols-2 gap-2 md:grid-cols-4 md:grid-rows-2">
         {/* Large tile */}
         <button
           onClick={() => goto('phones')}
-          className="group relative col-span-2 row-span-2 overflow-hidden rounded-2xl text-left card"
+          className="reveal-up group relative col-span-2 row-span-2 overflow-hidden rounded-2xl text-left card"
           style={{ minHeight:320 }}
         >
           <img src={imgUser3} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" />
@@ -525,7 +525,7 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
           <button
             key={item.label}
             onClick={() => goto(item.page)}
-            className="group relative overflow-hidden rounded-2xl text-left card"
+            className="reveal-up group relative overflow-hidden rounded-2xl text-left card"
             style={{ minHeight:155 }}
           >
             <img src={item.img} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35 transition-transform duration-700 group-hover:scale-105" />
@@ -547,7 +547,7 @@ function ShowroomFeature() {
   return (
     <section className="section border-y" style={{ borderColor:'var(--border)', background:'var(--bg-card)' }}>
       <div className="mx-auto flex max-w-[1440px] flex-col gap-12 px-5 md:flex-row md:items-center md:px-12">
-        <div className="w-full md:w-1/2">
+        <div className="reveal-up w-full md:w-1/2">
           <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Chitwan · Nepal</span>
           <h2 className="mt-4 font-serif" style={{ fontSize:'clamp(2rem,4vw,3.2rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
             Come see it<br /><span style={{ color:'var(--blue-bright)' }}>in person.</span>
@@ -579,7 +579,7 @@ function ShowroomFeature() {
           </div>
         </div>
 
-        <div className="relative w-full md:w-1/2">
+        <div className="reveal-scale relative w-full md:w-1/2">
           <img
             src={showroomDay}
             alt="Apple Guru showroom, Indra Dev Marga Chitwan"
@@ -605,16 +605,16 @@ function GalleryStrip() {
   const imgs = [imgUser1,imgUser2,imgUser3,imgUser4,imgUser5,imgUser1,imgUser2];
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
-      <div className="mb-8">
+      <div className="reveal mb-8">
         <p className="mb-3 text-[11px] font-semibold tracking-[.12em] uppercase" style={{ color:'var(--text-muted)' }}>At the showroom</p>
         <h2 className="font-serif" style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
           Real devices.<br /><span style={{ color:'var(--blue-bright)' }}>Real people.</span>
         </h2>
         <div className="line-accent mt-5" style={{ maxWidth:200 }} />
       </div>
-      <div className="scrollbar-hide flex gap-3 overflow-x-auto pb-2">
+      <div className="stagger scrollbar-hide flex gap-3 overflow-x-auto pb-2">
         {imgs.map((src,i) => (
-          <div key={i} className="shrink-0 overflow-hidden rounded-xl" style={{ width:176, height:224 }}>
+          <div key={i} className="reveal-scale shrink-0 overflow-hidden rounded-xl" style={{ width:176, height:224 }}>
             <img src={src} alt="" className="h-full w-full object-cover" />
           </div>
         ))}
@@ -1467,7 +1467,7 @@ function AppContent() {
   return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)', color:'var(--text-primary)' }}>
       <Header page={page} goto={goto} openSearch={()=>setSearchOpen(true)} />
-      <main className="page-reveal">{body}</main>
+      <main key={page} className="page-reveal">{body}</main>
       {page!=='home' && <Footer goto={goto} />}
       <BottomNav />
 
