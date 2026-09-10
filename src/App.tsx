@@ -842,6 +842,9 @@ function ExchangePage({ target, clearTarget }: { target:Product|null; clearTarge
           <p className="font-serif" style={{ fontSize:'2.5rem', lineHeight:1.1, color:'var(--blue-bright)' }}>
             – Rs. {hi.toLocaleString()}
           </p>
+          <p className="mt-2 text-[12.5px] leading-5" style={{ color:'var(--text-muted)' }}>
+            Rs. {lo.toLocaleString()} if in-store checks find issues, up to Rs. {hi.toLocaleString()} if it checks out clean.
+          </p>
           <div className="mt-4 rounded-xl border p-4 text-[13px] leading-6" style={{ borderColor:'var(--blue)', background:'var(--blue-dim)', color:'var(--text-secondary)' }}>
             <strong style={{ color:'var(--text-primary)' }}>Not a final price.</strong> This range is a starting guide based on the model and condition you picked above. We'll physically check your screen, battery health, and body condition in-store before confirming what we'll actually pay you.
           </div>
