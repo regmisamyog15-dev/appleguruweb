@@ -6,7 +6,9 @@ export type NavView =
   | 'showroom' 
   | 'insights' 
   | 'facts' 
-  | 'location';
+  | 'location'
+  | 'about'
+  | 'warranty';
 
 export type PageView = NavView;
 

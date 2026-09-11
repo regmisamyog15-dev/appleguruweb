@@ -8,7 +8,7 @@ import {
   ArrowRight, ArrowUpRight, ArrowLeft, Check, ChevronDown, CircleHelp,
   FileText, MapPin, Menu, MessageCircle, Minus, Package, Phone, Plus, Search,
   X, Wrench, Smartphone, Navigation, Clock3, RefreshCw, Pause, Play,
-  Sparkles, Watch
+  Sparkles, Watch, ShieldCheck, Users, Award, Heart, Handshake
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -999,10 +999,20 @@ function RepairPage() {
 
 // ── Showroom page ─────────────────────────────────────────────────────────────
 function ShowroomPage() {
+  const hours = [
+    ['Sunday – Friday', '10:00 AM – 7:00 PM'],
+    ['Saturday',         '11:00 AM – 5:00 PM'],
+  ];
+  const expect = [
+    { Icon:Smartphone, title:'Try before you buy',  text:'Hold every model side by side before deciding.' },
+    { Icon:ShieldCheck, title:'Genuine stock only',  text:'Every device we sell is authentic, never grey-market.' },
+    { Icon:Users,       title:'Real conversations',  text:'Talk to staff who use this gear every day, not a script.' },
+    { Icon:RefreshCw,   title:'Exchange on the spot', text:'Bring your old phone and walk out with the new one.' },
+  ];
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
       <div className="grid gap-12 md:grid-cols-2 md:items-center">
-        <div>
+        <div className="reveal-up">
           <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Our Showroom</span>
           <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5vw,4.5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
             One original<br /><span style={{ color:'var(--blue-bright)' }}>showroom.</span>
@@ -1013,7 +1023,6 @@ function ShowroomPage() {
           <div className="mt-8 space-y-4">
             {[
               { Icon:MapPin,  text:'Indra Dev Marga, Bharatpur 44200, Chitwan' },
-              { Icon:Clock3,  text:'Call ahead for a specific configuration or visit anytime.' },
               { Icon:Phone,   text:'+977 9821 552 339', href:'tel:9821552339' },
             ].map(({ Icon, text, href })=>(
               <div key={text} className="flex items-start gap-3 text-[14px]" style={{ color:'var(--text-secondary)' }}>
@@ -1024,6 +1033,18 @@ function ShowroomPage() {
                 >{text}</a> : text}
               </div>
             ))}
+            {/* Hours table */}
+            <div className="flex items-start gap-3 text-[14px]" style={{ color:'var(--text-secondary)' }}>
+              <Clock3 size={15} style={{ color:'var(--blue-bright)', flexShrink:0, marginTop:2 }} />
+              <div className="space-y-1">
+                {hours.map(([day,time])=>(
+                  <div key={day} className="flex gap-3">
+                    <span style={{ minWidth:130, color:'var(--text-primary)' }}>{day}</span>
+                    <span>{time}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Btn variant="primary" onClick={()=>wa('Hello Apple Guru. I am planning to visit the Chitwan showroom.')}>
@@ -1035,18 +1056,170 @@ function ShowroomPage() {
           </div>
         </div>
 
-        <div>
+        <div className="reveal-scale">
           <img src={showroomNight} alt="Apple Guru showroom at night" className="h-[360px] w-full rounded-2xl object-cover md:h-[480px]" />
         </div>
       </div>
 
-      {/* Real photo gallery — NO AI showroom image */}
-      <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-4">
-        {[showroomDay, imgUser1, imgUser4, imgUser5].map((src,i)=>(
-          <div key={i} className="overflow-hidden rounded-xl">
-            <img src={src} alt="" className="h-44 w-full object-cover" />
+      {/* What to expect */}
+      <div className="stagger mt-16 grid grid-cols-2 gap-4 md:grid-cols-4">
+        {expect.map(({ Icon, title, text })=>(
+          <div key={title} className="reveal-up rounded-xl border p-4" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
+            <Icon size={18} style={{ color:'var(--blue-bright)' }} />
+            <p className="mt-3 text-[13.5px] font-semibold" style={{ color:'var(--text-primary)' }}>{title}</p>
+            <p className="mt-1 text-[12.5px] leading-5" style={{ color:'var(--text-muted)' }}>{text}</p>
           </div>
         ))}
+      </div>
+
+      {/* Real photo gallery — NO AI showroom image */}
+      <div className="reveal mt-16 mb-6">
+        <h2 className="font-serif text-[1.4rem]" style={{ color:'var(--text-primary)' }}>Inside the showroom</h2>
+      </div>
+      <div className="stagger grid grid-cols-2 gap-3 md:grid-cols-4">
+        {[showroomDay, imgUser1, imgUser4, imgUser5].map((src,i)=>(
+          <div key={i} className="reveal-scale overflow-hidden rounded-xl">
+            <img src={src} alt="" className="h-44 w-full object-cover transition-transform duration-500 hover:scale-105" />
+          </div>
+        ))}
+      </div>
+
+      {/* Map */}
+      <div className="reveal mt-16 overflow-hidden rounded-2xl border" style={{ borderColor:'var(--border)' }}>
+        <iframe
+          title="Apple Guru showroom location"
+          src="https://www.google.com/maps?q=Apple+Guru,+Indra+dev+Hall,+Bharatpur+44200&output=embed"
+          width="100%"
+          height="360"
+          style={{ border:0, display:'block', filter:'grayscale(0.3) contrast(1.05)' }}
+          loading="lazy"
+        />
+      </div>
+    </section>
+  );
+}
+
+// ── About page ───────────────────────────────────────────────────────────────
+function AboutPage({ goto }: { goto:(p:PageView)=>void }) {
+  const values = [
+    { Icon:ShieldCheck, title:'Genuine, always', text:'Every device we sell or trade-in is authentic. No grey-market imports, no exceptions.' },
+    { Icon:Handshake,   title:'Straight talk',   text:'We tell you what a phone is actually worth and what it actually needs — no upselling.' },
+    { Icon:Heart,       title:'Local, for locals', text:'Built for Chitwan. We speak your language, literally and otherwise.' },
+    { Icon:Award,       title:'Hands that know', text:'Our technicians work on these devices daily, not occasionally.' },
+  ];
+  return (
+    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
+      <div style={{ maxWidth:680 }} className="reveal-up">
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>About Us</span>
+        <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+          Chitwan's own<br /><span style={{ color:'var(--blue-bright)' }}>tech store.</span>
+        </h1>
+        <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
+          Apple Guru started with a simple idea — Bharatpur shouldn't need Kathmandu for a genuine iPhone, an honest trade-in, or a same-day repair. We built a showroom where you can hold the device before you buy it, talk to someone who actually knows it, and get a straight answer about what it's worth.
+        </p>
+        <p className="mt-4 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
+          We carry Apple and Samsung flagships, run our own exchange and repair counter in-house, and stand behind every device that leaves our store.
+        </p>
+      </div>
+
+      <div className="stagger mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+        {values.map(({ Icon, title, text })=>(
+          <div key={title} className="reveal-up rounded-xl border p-5" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
+            <Icon size={20} style={{ color:'var(--blue-bright)' }} />
+            <p className="mt-4 text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{title}</p>
+            <p className="mt-1.5 text-[13px] leading-6" style={{ color:'var(--text-muted)' }}>{text}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="reveal mt-16 rounded-2xl border p-8 text-center md:p-12" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
+        <h2 className="font-serif" style={{ fontSize:'clamp(1.6rem,3vw,2.2rem)', color:'var(--text-primary)' }}>Come say hello.</h2>
+        <p className="mx-auto mt-3 max-w-md text-[14px] leading-6" style={{ color:'var(--text-secondary)' }}>
+          The best way to know us is to walk in. Indra Dev Marga, Bharatpur.
+        </p>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Btn variant="primary" onClick={()=>goto('showroom')}>Visit the showroom <ArrowRight size={13} /></Btn>
+          <Btn variant="outline" onClick={()=>wa('Hello Apple Guru. I wanted to ask about your store.')}>Message us <MessageCircle size={13} /></Btn>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Warranty & service plans page ───────────────────────────────────────────────
+function WarrantyPage({ goto }: { goto:(p:PageView)=>void }) {
+  const plans = [
+    {
+      title: 'Standard warranty',
+      badge: 'Included',
+      desc: 'Comes with every new device we sell — no extra cost.',
+      points: ['Covers manufacturing defects', 'Free diagnostic at our counter', 'Genuine replacement parts only'],
+    },
+    {
+      title: 'Extended protection',
+      badge: 'Optional',
+      desc: 'Added coverage for accidental damage, on top of the standard warranty.',
+      points: ['Screen and battery coverage', 'Priority same-day service', 'Discounted accidental-damage repairs'],
+    },
+  ];
+  const faqs = [
+    ['What does the standard warranty NOT cover?', 'Accidental damage — drops, water, or cracked screens — is not covered under the standard manufacturing warranty. Extended protection covers this.'],
+    ['How long does a warranty claim take?', 'Most diagnostics are done the same day you bring the device in. Repairs under warranty are typically completed within 24–48 hours.'],
+    ['Do I need the original receipt?', 'Yes — bring your purchase receipt or invoice from Apple Guru so we can verify the warranty period.'],
+    ['Can I buy the extended plan after I already bought the phone?', 'It is best added at the time of purchase, but ask our team — a short grace period may apply depending on the model.'],
+  ];
+  return (
+    <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
+      <div style={{ maxWidth:680 }} className="reveal-up">
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Warranty</span>
+        <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+          Covered,<br /><span style={{ color:'var(--blue-bright)' }}>clearly explained.</span>
+        </h1>
+        <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
+          Every device from Apple Guru comes with a standard warranty. Here's exactly what's covered, what isn't, and what to do if something goes wrong.
+        </p>
+      </div>
+
+      <div className="stagger mt-12 grid gap-5 md:grid-cols-2">
+        {plans.map(p=>(
+          <div key={p.title} className="reveal-up rounded-2xl border p-6" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-[1.3rem]" style={{ color:'var(--text-primary)' }}>{p.title}</h3>
+              <span className="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide" style={{ background:'var(--blue-dim)', color:'var(--blue-bright)' }}>{p.badge}</span>
+            </div>
+            <p className="mt-2 text-[13.5px] leading-6" style={{ color:'var(--text-secondary)' }}>{p.desc}</p>
+            <div className="mt-4 space-y-2.5">
+              {p.points.map(pt=>(
+                <div key={pt} className="flex items-start gap-2 text-[13px]" style={{ color:'var(--text-secondary)' }}>
+                  <Check size={14} className="mt-0.5 shrink-0" style={{ color:'var(--blue-bright)' }} />
+                  {pt}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="reveal mt-16">
+        <h2 className="font-serif text-[1.5rem]" style={{ color:'var(--text-primary)' }}>Common questions</h2>
+        <div className="mt-6 space-y-3">
+          {faqs.map(([q,a])=>(
+            <details key={q} className="group rounded-xl border p-4" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
+              <summary className="cursor-pointer list-none text-[14px] font-medium" style={{ color:'var(--text-primary)' }}>
+                <span className="flex items-center justify-between gap-4">
+                  {q}
+                  <ChevronDown size={15} className="shrink-0 transition-transform group-open:rotate-180" style={{ color:'var(--text-muted)' }} />
+                </span>
+              </summary>
+              <p className="mt-3 text-[13.5px] leading-6" style={{ color:'var(--text-secondary)' }}>{a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-12 flex flex-wrap gap-3">
+        <Btn variant="primary" onClick={()=>wa('Hello Apple Guru. I have a question about my warranty.')}>Ask about a claim <MessageCircle size={13} /></Btn>
+        <Btn variant="outline" onClick={()=>goto('repair')}>Go to Repair <ArrowRight size={13} /></Btn>
       </div>
     </section>
   );
@@ -1116,7 +1289,7 @@ function Footer({ goto }: { goto:(p:PageView)=>void }) {
           </div>
           <div className="flex flex-col gap-3">
             <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--text-primary)' }}>Company</span>
-            {[['Journal','insights'],['Showroom','showroom']].map(([label,p])=>(
+            {[['Journal','insights'],['Showroom','showroom'],['About','about'],['Warranty','warranty']].map(([label,p])=>(
               <button key={p} onClick={()=>goto(p as PageView)} className="text-left text-[14px] transition-colors"
                 style={{ color:'var(--text-muted)' }}
                 onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='var(--blue-bright)'}
@@ -1472,6 +1645,8 @@ function AppContent() {
     if (page==='exchange')                            return <ExchangePage target={targetProduct} clearTarget={()=>setTargetProduct(null)} onOpenGuide={()=>setSelectedPost(blogPosts.find(p=>p.slug==='how-phone-exchange-works-chitwan')||null)} />;
     if (page==='repair')                              return <RepairPage />;
     if (page==='showroom'||page==='location')         return <ShowroomPage />;
+    if (page==='about')                                return <AboutPage goto={goto} />;
+    if (page==='warranty')                             return <WarrantyPage goto={goto} />;
     if (page==='insights'||page==='facts')            return <JournalPage onSelect={setSelectedPost} />;
     return <HomePage goto={goto} />;
   },[page, targetProduct]);
