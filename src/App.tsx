@@ -1001,11 +1001,26 @@ function ShowroomPage() {
         <div className="reveal-up">
           <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Our Showroom</span>
           <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5vw,4.5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-            One original<br /><span style={{ color:'var(--blue-bright)' }}>showroom.</span>
+            The one original,<br /><span style={{ color:'var(--blue-bright)' }}>top-class showroom.</span>
           </h1>
           <p className="mt-5 max-w-md text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-            Come to Indra Dev Marga. Hold the phones side by side. Talk to someone who uses this stuff every day.
+            Come to Indra Dev Marga. Hold the phones side by side. Talk to someone who uses this stuff every day — 100% original devices, world-class service, zero grey-market shortcuts.
           </p>
+
+          {/* Trust badges */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            {['100% Original', 'Top-Class Service', 'Genuine Only', 'Trusted in Chitwan'].map(badge=>(
+              <span
+                key={badge}
+                className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12px] font-semibold"
+                style={{ border:'1px solid var(--border-hover)', background:'var(--bg-raised)', color:'var(--text-primary)' }}
+              >
+                <ShieldCheck size={12} style={{ color:'var(--blue-bright)' }} />
+                {badge}
+              </span>
+            ))}
+          </div>
+
           <div className="mt-8 space-y-4">
             {[
               { Icon:MapPin,  text:'Indra Dev Marga, Bharatpur 44200, Chitwan' },
@@ -1042,17 +1057,35 @@ function ShowroomPage() {
           </div>
         </div>
 
-        <div className="reveal-scale">
-          <img src={showroomNight} alt="Apple Guru showroom at night" className="h-[360px] w-full rounded-2xl object-cover md:h-[480px]" />
+        <div className="reveal-scale relative">
+          <div
+            className="absolute -inset-4 rounded-[2rem] opacity-60 blur-2xl"
+            style={{ background:'radial-gradient(circle at 30% 20%, var(--blue-bright), transparent 60%)' }}
+          />
+          <img
+            src={showroomNight}
+            alt="Apple Guru showroom at night"
+            className="relative h-[360px] w-full rounded-2xl object-cover md:h-[480px]"
+            style={{ border:'1px solid var(--border-hover)' }}
+          />
+          <div
+            className="absolute bottom-4 left-4 right-4 z-10 rounded-xl px-4 py-3 backdrop-blur-md"
+            style={{ background:'rgba(10,10,18,.55)', border:'1px solid var(--border-hover)' }}
+          >
+            <p className="text-[13px] font-semibold" style={{ color:'var(--text-primary)' }}>Chitwan's original Apple &amp; Samsung showroom</p>
+            <p className="mt-0.5 text-[11.5px]" style={{ color:'var(--text-muted)' }}>Genuine devices · Top-class service · Since day one</p>
+          </div>
         </div>
       </div>
 
       {/* What to expect */}
       <div className="stagger mt-16 grid grid-cols-2 gap-4 md:grid-cols-4">
         {expect.map(({ Icon, title, text })=>(
-          <div key={title} className="reveal-up rounded-xl border p-4" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
-            <Icon size={18} style={{ color:'var(--blue-bright)' }} />
-            <p className="mt-3 text-[13.5px] font-semibold" style={{ color:'var(--text-primary)' }}>{title}</p>
+          <div key={title} className="reveal-up rounded-xl border p-4 transition-colors" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full" style={{ background:'var(--blue-dim)' }}>
+              <Icon size={17} style={{ color:'var(--blue-bright)' }} />
+            </div>
+            <p className="mt-3.5 text-[13.5px] font-semibold" style={{ color:'var(--text-primary)' }}>{title}</p>
             <p className="mt-1 text-[12.5px] leading-5" style={{ color:'var(--text-muted)' }}>{text}</p>
           </div>
         ))}
@@ -1060,11 +1093,12 @@ function ShowroomPage() {
 
       {/* Real photo gallery — NO AI showroom image */}
       <div className="reveal mt-16 mb-6">
-        <h2 className="font-serif text-[1.4rem]" style={{ color:'var(--text-primary)' }}>Inside the showroom</h2>
+        <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Genuine, in person</span>
+        <h2 className="mt-2 font-serif text-[1.4rem]" style={{ color:'var(--text-primary)' }}>Inside the showroom</h2>
       </div>
       <div className="stagger grid grid-cols-2 gap-3 md:grid-cols-4">
         {[showroomDay, imgUser1, imgUser4, imgUser5].map((src,i)=>(
-          <div key={i} className="reveal-scale overflow-hidden rounded-xl">
+          <div key={i} className="reveal-scale overflow-hidden rounded-xl" style={{ border:'1px solid var(--border)' }}>
             <img src={src} alt="" className="h-44 w-full object-cover transition-transform duration-500 hover:scale-105" />
           </div>
         ))}
