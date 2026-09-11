@@ -613,7 +613,15 @@ function ShowroomFeature() {
 
 // ── User gallery strip ────────────────────────────────────────────────────────
 function GalleryStrip() {
-  const imgs = [imgUser1,imgUser2,imgUser3,imgUser4,imgUser5,gifWatchBanner,imgUser2];
+  const imgs = [
+    { src: imgUser1 },
+    { src: imgUser2 },
+    { src: imgUser3 },
+    { src: imgUser4 },
+    { src: imgUser5 },
+    { src: gifWatchBanner, pos: 'left center' },
+    { src: imgUser2 },
+  ];
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
       <div className="reveal mb-8">
@@ -624,9 +632,9 @@ function GalleryStrip() {
         <div className="line-accent mt-5" style={{ maxWidth:200 }} />
       </div>
       <div className="stagger scrollbar-hide flex gap-3 overflow-x-auto pb-2">
-        {imgs.map((src,i) => (
+        {imgs.map((item,i) => (
           <div key={i} className="reveal-scale shrink-0 overflow-hidden rounded-xl" style={{ width:176, height:224 }}>
-            <img src={src} alt="" className="h-full w-full object-cover" />
+            <img src={item.src} alt="" className="h-full w-full object-cover" style={{ objectPosition: item.pos || 'center' }} />
           </div>
         ))}
       </div>
