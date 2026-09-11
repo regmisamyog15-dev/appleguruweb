@@ -1482,10 +1482,11 @@ function AppContent() {
       <AnimatePresence mode="wait">
         <motion.main
           key={page}
-          initial={{ opacity:0, y:18 }}
-          animate={{ opacity:1, y:0 }}
-          exit={{ opacity:0, y:-12 }}
-          transition={{ duration:.45, ease:[0.16,1,0.3,1] }}
+          style={{ transformPerspective: 1400, transformOrigin: 'center top' }}
+          initial={{ opacity:0, scale:0.82, rotateX:10, y:50 }}
+          animate={{ opacity:1, scale:1, rotateX:0, y:0 }}
+          exit={{ opacity:0, scale:1.12, rotateX:-8 }}
+          transition={{ duration:1.5, ease:[0.16,1,0.3,1] }}
         >
           {body}
         </motion.main>
