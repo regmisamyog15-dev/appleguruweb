@@ -495,7 +495,7 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
 // ── Home bento grid ───────────────────────────────────────────────────────────
 const bentoItems = [
   { label:'Phones', sub:'iPhone & Galaxy', icon:<Smartphone size={15}/>, img:imgUser1, page:'phones' as PageView },
-  { label:'Exchange', sub:'Trade in', icon:<RefreshCw size={15}/>, img:imgExchange, page:'exchange' as PageView },
+  { label:'Exchange', sub:'Trade in', icon:<RefreshCw size={15}/>, img:imgExchange, video:vidExchangeHero, page:'exchange' as PageView },
   { label:'Repair', sub:'Same-day service', icon:<Wrench size={15}/>, img:imgRepair, page:'repair' as PageView },
   { label:'Accessories', sub:'Cases & more', icon:<Watch size={15}/>, img:gifAccessories, page:'phones' as PageView },
   { label:'Showroom', sub:'Chitwan', icon:<MapPin size={15}/>, img:showroomDay, page:'showroom' as PageView },
@@ -540,7 +540,18 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
             className="reveal-up group relative overflow-hidden rounded-2xl text-left card"
             style={{ minHeight:155 }}
           >
-            <img src={item.img} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35 transition-transform duration-700 group-hover:scale-105" />
+            {item.video ? (
+              <video
+                src={item.video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover opacity-45 transition-transform duration-700 group-hover:scale-105"
+              />
+            ) : (
+              <img src={item.img} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35 transition-transform duration-700 group-hover:scale-105" />
+            )}
             <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),transparent)' }} />
             <div className="absolute bottom-4 left-4 z-10">
               <span style={{ color:'var(--blue-bright)' }}>{item.icon}</span>
