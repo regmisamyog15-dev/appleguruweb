@@ -613,7 +613,7 @@ function ShowroomFeature() {
 
 // ── User gallery strip ────────────────────────────────────────────────────────
 function GalleryStrip() {
-  const imgs = [imgUser1,imgUser2,imgUser3,imgUser4,imgUser5,imgUser1,imgUser2];
+  const imgs = [imgUser1,imgUser2,imgUser3,imgUser4,imgUser5,gifWatchBanner,imgUser2];
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
       <div className="reveal mb-8">
@@ -629,24 +629,6 @@ function GalleryStrip() {
             <img src={src} alt="" className="h-full w-full object-cover" />
           </div>
         ))}
-      </div>
-    </section>
-  );
-}
-
-// ── Watch banner (above footer) ────────────────────────────────────────────────
-function WatchBanner() {
-  return (
-    <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
-      <div className="reveal-up relative overflow-hidden rounded-2xl card" style={{ minHeight:220 }}>
-        <img src={gifWatchBanner} alt="Apple Watch" className="absolute inset-0 h-full w-full object-cover opacity-60" />
-        <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),rgba(10,10,18,.3) 55%,transparent)' }} />
-        <div className="absolute bottom-6 left-6 right-6 z-10">
-          <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Wearables</span>
-          <h3 className="mt-2 font-serif text-[1.5rem] leading-tight" style={{ color:'var(--text-primary)' }}>
-            Apple Watch &amp; bands
-          </h3>
-        </div>
       </div>
     </section>
   );
@@ -1615,7 +1597,6 @@ function HomePage({ goto }: { goto:(p:PageView)=>void }) {
       <HomeBento goto={goto} />
       <ShowroomFeature />
       <GalleryStrip />
-      <WatchBanner />
       <Footer goto={goto} />
     </>
   );
