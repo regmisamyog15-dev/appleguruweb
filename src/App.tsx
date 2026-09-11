@@ -1479,14 +1479,14 @@ function AppContent() {
   return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)', color:'var(--text-primary)' }}>
       <Header page={page} goto={goto} openSearch={()=>setSearchOpen(true)} />
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout">
         <motion.main
           key={page}
           style={{ transformPerspective: 1400, transformOrigin: 'center top' }}
-          initial={{ opacity:0, scale:0.92, rotateX:6, y:24 }}
+          initial={{ opacity:0, scale:0.96, rotateX:4, y:12 }}
           animate={{ opacity:1, scale:1, rotateX:0, y:0 }}
-          exit={{ opacity:0, scale:1.05, rotateX:-5 }}
-          transition={{ duration:.45, ease:[0.16,1,0.3,1] }}
+          exit={{ opacity:0, scale:1.02 }}
+          transition={{ duration:.28, ease:[0.16,1,0.3,1] }}
         >
           {body}
         </motion.main>
