@@ -36,6 +36,9 @@ const imgExchange = '/assets/stitch/premium_photorealistic_product_campaign_comp
 const imgUser1    = '/assets/user/200_1788777310239.webp';
 const imgUser2    = '/assets/user/200_1788777333446.webp';
 const imgUser3    = '/assets/user/200_1788777343556.webp';
+const gifHeroPhones     = '/assets/gifs/hero-phones.gif';
+const gifAccessories    = '/assets/gifs/accessories-cases.gif';
+const gifWatchBanner    = '/assets/gifs/watch-banner.gif';
 const imgUser4    = '/assets/user/200_1788777354019.webp';
 const imgUser5    = '/assets/user/200_1788777460813.webp';
 const logoSrc     = '/images/favicon.png';
@@ -493,7 +496,7 @@ const bentoItems = [
   { label:'Phones', sub:'iPhone & Galaxy', icon:<Smartphone size={15}/>, img:imgUser1, page:'phones' as PageView },
   { label:'Exchange', sub:'Trade in', icon:<RefreshCw size={15}/>, img:imgExchange, page:'exchange' as PageView },
   { label:'Repair', sub:'Same-day service', icon:<Wrench size={15}/>, img:imgRepair, page:'repair' as PageView },
-  { label:'Accessories', sub:'Cases & more', icon:<Watch size={15}/>, img:imgUser2, page:'phones' as PageView },
+  { label:'Accessories', sub:'Cases & more', icon:<Watch size={15}/>, img:gifAccessories, page:'phones' as PageView },
   { label:'Showroom', sub:'Chitwan', icon:<MapPin size={15}/>, img:showroomDay, page:'showroom' as PageView },
 ];
 
@@ -515,7 +518,7 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
           className="reveal-up group relative col-span-2 row-span-2 overflow-hidden rounded-2xl text-left card"
           style={{ minHeight:320 }}
         >
-          <img src={imgUser3} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" />
+          <img src={gifHeroPhones} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" />
           <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),rgba(10,10,18,.4) 50%,transparent)' }} />
           <div className="absolute bottom-6 left-6 right-6 z-10">
             <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Phones</span>
@@ -626,6 +629,24 @@ function GalleryStrip() {
             <img src={src} alt="" className="h-full w-full object-cover" />
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+// ── Watch banner (above footer) ────────────────────────────────────────────────
+function WatchBanner() {
+  return (
+    <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
+      <div className="reveal-up relative overflow-hidden rounded-2xl card" style={{ minHeight:220 }}>
+        <img src={gifWatchBanner} alt="Apple Watch" className="absolute inset-0 h-full w-full object-cover opacity-60" />
+        <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),rgba(10,10,18,.3) 55%,transparent)' }} />
+        <div className="absolute bottom-6 left-6 right-6 z-10">
+          <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Wearables</span>
+          <h3 className="mt-2 font-serif text-[1.5rem] leading-tight" style={{ color:'var(--text-primary)' }}>
+            Apple Watch &amp; bands
+          </h3>
+        </div>
       </div>
     </section>
   );
@@ -1594,6 +1615,7 @@ function HomePage({ goto }: { goto:(p:PageView)=>void }) {
       <HomeBento goto={goto} />
       <ShowroomFeature />
       <GalleryStrip />
+      <WatchBanner />
       <Footer goto={goto} />
     </>
   );
