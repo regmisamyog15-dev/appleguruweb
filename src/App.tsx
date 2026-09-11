@@ -1483,10 +1483,10 @@ function AppContent() {
         <motion.main
           key={page}
           style={{ transformPerspective: 1400, transformOrigin: 'center top' }}
-          initial={{ opacity:0, scale:0.82, rotateX:10, y:50 }}
+          initial={{ opacity:0, scale:0.92, rotateX:6, y:24 }}
           animate={{ opacity:1, scale:1, rotateX:0, y:0 }}
-          exit={{ opacity:0, scale:1.12, rotateX:-8 }}
-          transition={{ duration:.9, ease:[0.16,1,0.3,1] }}
+          exit={{ opacity:0, scale:1.05, rotateX:-5 }}
+          transition={{ duration:.45, ease:[0.16,1,0.3,1] }}
         >
           {body}
         </motion.main>
