@@ -288,10 +288,12 @@ a { -webkit-tap-highlight-color: transparent; text-decoration: none; color: inhe
   letter-spacing: -0.01em;
   min-height: 44px;
   padding: 0 22px;
-  transition: all 0.25s var(--ease-apple);
+  transition: transform 0.15s var(--ease-apple), background 0.25s var(--ease-apple), opacity 0.25s var(--ease-apple);
   white-space: nowrap;
   cursor: pointer;
 }
+/* Immediate tactile feedback on press, not just on full click */
+.btn:active { transform: scale(0.96); transition-duration: 0.1s; }
 .btn-primary {
   position: relative;
   overflow: hidden;
