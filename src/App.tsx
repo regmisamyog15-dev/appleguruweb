@@ -854,50 +854,25 @@ function ExchangePage({ target, clearTarget, onOpenGuide }: { target:Product|nul
         </div>
 
         <div className="border-t pt-6 md:border-l md:border-t-0 md:pl-10 md:pt-0" style={{ borderColor:'var(--border)' }}>
-          <h3 className="text-[13px] font-medium" style={{ color:'var(--text-muted)' }}>Estimated trade-in range</h3>
+          <h3 className="text-[13px] font-medium" style={{ color:'var(--text-muted)' }}>Your estimate</h3>
           <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-secondary)' }}>
             For your <strong style={{ color:'var(--text-primary)' }}>{model}</strong> · {cond.label}
           </p>
 
-          {/* Breakdown — shows how the range was built, not just the result */}
-          <div className="mt-6 space-y-3 rounded-xl border p-4 text-[13px]" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
-            <div className="flex items-center justify-between gap-4">
-              <span style={{ color:'var(--text-secondary)' }}>Base value, like-new condition</span>
-              <span className="shrink-0 font-medium" style={{ color:'var(--text-primary)' }}>
-                Rs. {base[0].toLocaleString()} – {base[1].toLocaleString()}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <span style={{ color:'var(--text-secondary)' }}>Adjusted for "{cond.label}"</span>
-              <span className="shrink-0 font-medium" style={{ color: cond.mult<1 ? 'var(--blue-bright)' : 'var(--text-primary)' }}>
-                {cond.mult===1 ? 'No deduction' : `${Math.round((1-cond.mult)*100)}% off`}
-              </span>
-            </div>
-          </div>
-
-          <p className="mt-6 text-[12px] font-semibold uppercase tracking-[.08em]" style={{ color:'var(--text-muted)' }}>Your estimate</p>
-          <p className="mt-2 font-serif" style={{ fontSize:'2.5rem', lineHeight:1.05, letterSpacing:'-.02em' }}>
-            <span style={{ color:'var(--text-primary)' }}>Rs. {lo.toLocaleString()}</span>
-            <span style={{ color:'var(--text-muted)' }}> – </span>
+          <p className="mt-6 font-serif" style={{ fontSize:'2.75rem', lineHeight:1.05, letterSpacing:'-.02em' }}>
+            <span style={{ color:'var(--text-muted)', fontSize:'1.1rem', fontWeight:600 }}>Up to </span>
             <span style={{ color:'var(--blue-bright)' }}>Rs. {hi.toLocaleString()}</span>
           </p>
-          <p className="mt-2 text-[12.5px] leading-5" style={{ color:'var(--text-muted)' }}>
-            Lower end if the in-store check finds issues, higher end if it's fully clean.
+          <p className="mt-2 text-[13px] leading-5" style={{ color:'var(--text-secondary)' }}>
+            {cond.mult===1
+              ? 'Your device looks great — this is close to the top value.'
+              : `If it checks out cleaner in-store, it can go up. As selected, expect around Rs. ${lo.toLocaleString()}.`}
           </p>
 
-          {/* Single consolidated info panel — was 3 separate stacked boxes */}
-          <div className="mt-6 space-y-3.5 rounded-xl border p-4 text-[13px] leading-6" style={{ borderColor:'var(--border)', background:'var(--bg-raised)', color:'var(--text-secondary)' }}>
+          <div className="mt-6 rounded-xl border p-4 text-[13px] leading-6" style={{ borderColor:'var(--border)', background:'var(--bg-raised)', color:'var(--text-secondary)' }}>
             <div className="flex gap-2.5">
               <CircleHelp size={15} className="mt-0.5 shrink-0" style={{ color:'var(--blue-bright)' }} />
-              <span><strong style={{ color:'var(--text-primary)' }}>Not a final price</strong> — we confirm the exact amount after checking your screen, battery health, and body condition in-store.</span>
-            </div>
-            <div className="flex gap-2.5">
-              <Package size={15} className="mt-0.5 shrink-0" style={{ color:'var(--blue-bright)' }} />
-              <span>Bring your device, its original box if available, and any cables. Our team does the rest.</span>
-            </div>
-            <div className="flex gap-2.5">
-              <Sparkles size={15} className="mt-0.5 shrink-0" style={{ color:'var(--blue-bright)' }} />
-              <span>Original parts and unaltered pairing can add up to 25% more value.</span>
+              <span>We confirm the exact amount in-store after checking the screen, battery, and body.</span>
             </div>
           </div>
           {target && (
