@@ -1,3 +1,4 @@
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   type ReactNode, useEffect, useMemo, useState, useRef, type TouchEvent
 } from 'react';
@@ -355,14 +356,21 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
         touchX.current=null;
       }}
     >
-      {/* BG image — pinned to the RIGHT half, high opacity */}
-      <img
-        key={`bg-${idx}`}
-        src={s.img}
-        alt=""
-        className="absolute top-0 right-0 h-full transition-opacity duration-500"
-        style={{ width:'62%', objectFit:'cover', objectPosition:'center', opacity:.72 }}
-      />
+      {/* BG image — spring crossfade + scale via framer-motion instead of a
+          plain opacity swap, for a more premium slide transition */}
+      <AnimatePresence mode="sync">
+        <motion.img
+          key={`bg-${idx}`}
+          src={s.img}
+          alt=""
+          className="absolute top-0 right-0 h-full"
+          style={{ width:'62%', objectFit:'cover', objectPosition:'center' }}
+          initial={{ opacity:0, scale:1.08 }}
+          animate={{ opacity:.72, scale:1 }}
+          exit={{ opacity:0, scale:1.02 }}
+          transition={{ duration:.9, ease:[0.16,1,0.3,1] }}
+        />
+      </AnimatePresence>
       {/* Strong left-to-right gradient so text stays crisp */}
       <div className="absolute inset-0" style={{ background:'linear-gradient(90deg,var(--bg) 38%,rgba(10,10,18,.55) 62%,transparent 100%)' }} />
       {/* Bottom fade */}
@@ -640,7 +648,11 @@ function ProdImg({ product, className='' }: { product:Product; className?:string
 // ── Product card ──────────────────────────────────────────────────────────────
 function ProductCard({ p, onSelect }: { p:Product; onSelect:(p:Product)=>void }) {
   return (
-    <article className="group card">
+    <motion.article
+      className="group card"
+      whileHover={{ y:-6, scale:1.015 }}
+      transition={{ type:'spring', stiffness:300, damping:22 }}
+    >
       <button onClick={() => onSelect(p)} className="block w-full text-left">
         <ProdImg product={p} className="h-52 md:h-60" />
         <div className="p-5">
@@ -668,7 +680,7 @@ function ProductCard({ p, onSelect }: { p:Product; onSelect:(p:Product)=>void })
           <MessageCircle size={12} /> Enquire on WhatsApp
         </button>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
@@ -1467,7 +1479,17 @@ function AppContent() {
   return (
     <div style={{ minHeight:'100dvh', background:'var(--bg)', color:'var(--text-primary)' }}>
       <Header page={page} goto={goto} openSearch={()=>setSearchOpen(true)} />
-      <main key={page} className="page-reveal">{body}</main>
+      <AnimatePresence mode="wait">
+        <motion.main
+          key={page}
+          initial={{ opacity:0, y:18 }}
+          animate={{ opacity:1, y:0 }}
+          exit={{ opacity:0, y:-12 }}
+          transition={{ duration:.45, ease:[0.16,1,0.3,1] }}
+        >
+          {body}
+        </motion.main>
+      </AnimatePresence>
       {page!=='home' && <Footer goto={goto} />}
       <BottomNav />
 
