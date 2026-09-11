@@ -1486,7 +1486,7 @@ function AppContent() {
           initial={{ opacity:0, scale:0.82, rotateX:10, y:50 }}
           animate={{ opacity:1, scale:1, rotateX:0, y:0 }}
           exit={{ opacity:0, scale:1.12, rotateX:-8 }}
-          transition={{ duration:1.5, ease:[0.16,1,0.3,1] }}
+          transition={{ duration:.9, ease:[0.16,1,0.3,1] }}
         >
           {body}
         </motion.main>
