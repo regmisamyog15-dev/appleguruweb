@@ -39,6 +39,7 @@ const imgUser3    = '/assets/user/200_1788777343556.webp';
 const gifHeroPhones     = '/assets/gifs/hero-phones.gif';
 const gifAccessories    = '/assets/gifs/accessories-cases.gif';
 const gifWatchBanner    = '/assets/gifs/watch-banner.gif';
+const vidExchangeHero   = '/assets/videos/exchange-hero.mp4';
 const imgUser4    = '/assets/user/200_1788777354019.webp';
 const imgUser5    = '/assets/user/200_1788777460813.webp';
 const logoSrc     = '/images/favicon.png';
@@ -783,14 +784,40 @@ function ExchangePage({ target, clearTarget, onOpenGuide }: { target:Product|nul
 
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
-      <div style={{ maxWidth:640 }}>
-        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Phone Exchange</span>
-        <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-          Trade in.<br /><span style={{ color:'var(--blue-bright)' }}>Level up.</span>
-        </h1>
-        <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-          Exchange your current phone for a new one. The value of your old device comes off the price.
-        </p>
+      <div className="grid gap-10 md:grid-cols-2 md:items-center">
+        <div>
+          <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Phone Exchange</span>
+          <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
+            Trade in.<br /><span style={{ color:'var(--blue-bright)' }}>Level up.</span>
+          </h1>
+          <p className="mt-5 max-w-md text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
+            Exchange your current phone for a new one. The value of your old device comes off the price.
+          </p>
+        </div>
+
+        {/* Video showcase */}
+        <div className="reveal-scale relative">
+          <div
+            className="absolute -inset-4 rounded-[2rem] opacity-60 blur-2xl"
+            style={{ background:'radial-gradient(circle at 70% 30%, var(--blue-bright), transparent 60%)' }}
+          />
+          <video
+            className="relative h-[320px] w-full rounded-2xl object-cover md:h-[460px]"
+            style={{ border:'1px solid var(--border-hover)' }}
+            src={vidExchangeHero}
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <div
+            className="absolute bottom-4 left-4 right-4 z-10 rounded-xl px-4 py-3 backdrop-blur-md"
+            style={{ background:'rgba(10,10,18,.55)', border:'1px solid var(--border-hover)' }}
+          >
+            <p className="text-[13px] font-semibold" style={{ color:'var(--text-primary)' }}>Any phone, any condition — honestly valued</p>
+            <p className="mt-0.5 text-[11.5px]" style={{ color:'var(--text-muted)' }}>Cracked, working, or mint — we assess it in front of you.</p>
+          </div>
+        </div>
       </div>
 
       {/* Steps */}
@@ -1001,7 +1028,7 @@ function ShowroomPage() {
         <div className="reveal-up">
           <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Our Showroom</span>
           <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5vw,4.5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-            The one original,<br /><span style={{ color:'var(--blue-bright)' }}>top-class showroom.</span>
+            The Original Apple Guru<br /><span style={{ color:'var(--blue-bright)' }}>showroom of Nepal.</span>
           </h1>
           <p className="mt-5 max-w-md text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
             Come to Indra Dev Marga. Hold the phones side by side. Talk to someone who uses this stuff every day — 100% original devices, world-class service, zero grey-market shortcuts.
