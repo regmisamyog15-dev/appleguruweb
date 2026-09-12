@@ -47,8 +47,8 @@ export const translations: Record<Lang, Dict> = {
     'repair.bookBtn': 'Book a repair',
 
     'showroomPage.eyebrow': 'Our Showroom',
-    'showroomPage.title1': 'One original', 'showroomPage.title2': 'showroom.',
-    'showroomPage.subhead': "Come to Indra Dev Marga. Hold the phones side by side. Talk to someone who uses this stuff every day.",
+    'showroomPage.title1': 'The Original Apple Guru', 'showroomPage.title2': 'showroom of Nepal.',
+    'showroomPage.subhead': "Come to Indra Dev Marga. Hold the phones side by side. Talk to someone who uses this stuff every day — 100% original devices, world-class service, zero grey-market shortcuts.",
     'showroomPage.planVisit': 'Plan a visit',
     'showroomPage.directions': 'Get directions',
     'showroomPage.expect1t': 'Try before you buy', 'showroomPage.expect1d': 'Hold every model side by side before deciding.',
@@ -56,6 +56,7 @@ export const translations: Record<Lang, Dict> = {
     'showroomPage.expect3t': 'Real conversations', 'showroomPage.expect3d': 'Talk to staff who use this gear every day, not a script.',
     'showroomPage.expect4t': 'Exchange on the spot', 'showroomPage.expect4d': 'Bring your old phone and walk out with the new one.',
     'showroomPage.inside': 'Inside the showroom',
+    'showroomPage.insideEyebrow': 'Genuine, in person',
 
     'about.eyebrow': 'About Us',
     'about.title1': "Chitwan's own", 'about.title2': 'tech store.',
@@ -143,6 +144,7 @@ export const translations: Record<Lang, Dict> = {
     'showroomPage.expect3t': 'वास्तविक कुराकानी', 'showroomPage.expect3d': 'हरेक दिन यो प्रयोग गर्ने कर्मचारीसँग कुरा गर्नुहोस्, स्क्रिप्ट होइन।',
     'showroomPage.expect4t': 'तुरुन्तै एक्सचेन्ज', 'showroomPage.expect4d': 'आफ्नो पुरानो फोन ल्याउनुहोस् र नयाँ फोन लिएर जानुहोस्।',
     'showroomPage.inside': 'शोरूम भित्र',
+    'showroomPage.insideEyebrow': 'वास्तविक, प्रत्यक्ष',
 
     'about.eyebrow': 'हाम्रोबारे',
     'about.title1': 'चितवनकै आफ्नै', 'about.title2': 'टेक स्टोर।',
