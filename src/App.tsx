@@ -1,3 +1,4 @@
+import { LangProvider, useLang } from './i18n';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   type ReactNode, useEffect, useMemo, useState, useRef, type TouchEvent
@@ -8,7 +9,7 @@ import {
   ArrowRight, ArrowUpRight, ArrowLeft, Check, ChevronDown, CircleHelp,
   FileText, MapPin, Menu, MessageCircle, Minus, Package, Phone, Plus, Search,
   X, Wrench, Smartphone, Navigation, Clock3, RefreshCw, Pause, Play,
-  Sparkles, Watch, ShieldCheck, Users, Award, Heart, Handshake
+  Sparkles, Watch, ShieldCheck, Users, Award, Heart, Handshake, Globe
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -98,9 +99,51 @@ function Logo() {
 }
 
 // ── Header ───────────────────────────────────────────────────────────────────
+function LanguageSwitcher() {
+  const { lang, setLang } = useLang();
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="flex items-center gap-1.5 rounded-full px-3 py-2 text-[13px] transition-all"
+        style={{ border:'1px solid var(--border-hover)', color:'var(--text-secondary)', background:'var(--bg-raised)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)'; (e.currentTarget as HTMLElement).style.color='var(--text-primary)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-hover)'; (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'; }}
+      >
+        <Globe size={14} />
+        <span className="hidden sm:inline">{lang==='ne' ? 'नेपाली' : 'English'}</span>
+        <ChevronDown size={13} style={{ transform: open ? 'rotate(180deg)' : 'none', transition:'transform .2s' }} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div
+            className="absolute right-0 top-full z-50 mt-2 w-36 overflow-hidden rounded-xl"
+            style={{ border:'1px solid var(--border)', background:'var(--bg-raised)', boxShadow:'0 12px 32px rgba(0,0,0,.4)' }}
+          >
+            {(['en','ne'] as const).map(l => (
+              <button
+                key={l}
+                onClick={() => { setLang(l); setOpen(false); }}
+                className="flex w-full items-center justify-between px-4 py-2.5 text-[13px]"
+                style={{ color: lang===l ? 'var(--blue-bright)' : 'var(--text-secondary)', background: lang===l ? 'var(--blue-dim)' : 'transparent' }}
+              >
+                {l==='en' ? 'English' : 'नेपाली'}
+                {lang===l && <Check size={13} />}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function Header({ page, goto, openSearch }: {
   page: PageView; goto: (p: PageView) => void; openSearch: () => void;
 }) {
+  const { t } = useLang();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled,  setScrolled]  = useState(false);
   useEffect(() => {
@@ -136,13 +179,14 @@ function Header({ page, goto, openSearch }: {
                 onClick={() => go(item.id)}
                 className={`nav-pill ${page === item.id ? 'active' : ''}`}
               >
-                {item.label}
+                {t(`nav.${item.id}`)}
               </button>
             ))}
           </nav>
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             {/* Search — prominent bar on desktop */}
             <button
               onClick={openSearch}
@@ -206,7 +250,7 @@ function Header({ page, goto, openSearch }: {
                 className="flex w-full items-center justify-between border-b py-4 text-left text-[15px]"
                 style={{ borderColor:'var(--border)', color: page===item.id ? 'var(--blue-bright)' : 'var(--text-primary)' }}
               >
-                {item.label} <ArrowUpRight size={14} style={{ color:'var(--text-muted)' }} />
+                {t(`nav.${item.id}`)} <ArrowUpRight size={14} style={{ color:'var(--text-muted)' }} />
               </button>
             ))}
             <a href="tel:9821552339" className="mt-5 flex items-center gap-2 text-[13px]" style={{ color:'var(--text-muted)' }}>
@@ -304,6 +348,7 @@ const slides: Slide[] = [
 ];
 
 function Hero({ goto }: { goto: (p: PageView) => void }) {
+  const { t } = useLang();
   const [idx,     setIdx]     = useState(0);
   const [prog,    setProg]    = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -414,12 +459,12 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
               {s.cta} <ArrowRight size={15} />
             </Btn>
             <Btn variant="outline" onClick={() => wa(`Hello Apple Guru. I am interested in ${s.tag}.`)}>
-              <MessageCircle size={14} /> Ask us
+              <MessageCircle size={14} /> {t('hero.askUs')}
             </Btn>
           </div>
           <div className="mt-6 flex items-center gap-2 text-[12px]" style={{ color:'var(--text-muted)' }}>
             <MapPin size={12} style={{ color:'var(--blue)' }} />
-            Indra Dev Marga, Bharatpur · Chitwan
+            {t('hero.locationLine')}
           </div>
         </div>
 
@@ -490,21 +535,22 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
 
 // ── Home bento grid ───────────────────────────────────────────────────────────
 const bentoItems = [
-  { label:'Phones', sub:'iPhone & Galaxy', icon:<Smartphone size={15}/>, img:imgUser1, page:'phones' as PageView },
-  { label:'Exchange', sub:'Trade in', icon:<RefreshCw size={15}/>, img:imgExchange, page:'exchange' as PageView },
-  { label:'Repair', sub:'Same-day service', icon:<Wrench size={15}/>, img:imgRepair, page:'repair' as PageView },
-  { label:'Accessories', sub:'Cases & more', icon:<Watch size={15}/>, img:imgUser2, page:'phones' as PageView },
-  { label:'Showroom', sub:'Chitwan', icon:<MapPin size={15}/>, img:showroomDay, page:'showroom' as PageView },
+  { key:'phones', label:'Phones', sub:'iPhone & Galaxy', icon:<Smartphone size={15}/>, img:imgUser1, page:'phones' as PageView },
+  { key:'exchange', label:'Exchange', sub:'Trade in', icon:<RefreshCw size={15}/>, img:imgExchange, page:'exchange' as PageView },
+  { key:'repair', label:'Repair', sub:'Same-day service', icon:<Wrench size={15}/>, img:imgRepair, page:'repair' as PageView },
+  { key:'accessories', label:'Accessories', sub:'Cases & more', icon:<Watch size={15}/>, img:imgUser2, page:'phones' as PageView },
+  { key:'showroom', label:'Showroom', sub:'Chitwan', icon:<MapPin size={15}/>, img:showroomDay, page:'showroom' as PageView },
 ];
 
 function HomeBento({ goto }: { goto: (p: PageView) => void }) {
+  const { t } = useLang();
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
       <div className="reveal mb-10">
-        <p className="mb-3 text-[11px] font-semibold tracking-[.12em] uppercase" style={{ color:'var(--text-muted)' }}>What we do</p>
+        <p className="mb-3 text-[11px] font-semibold tracking-[.12em] uppercase" style={{ color:'var(--text-muted)' }}>{t('bento.eyebrow')}</p>
         <h2 className="font-serif" style={{ fontSize:'clamp(2rem,4.5vw,3.5rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-          Everything you need.<br />
-          <span style={{ color:'var(--blue-bright)' }}>One place.</span>
+          {t('bento.title1')}<br />
+          <span style={{ color:'var(--blue-bright)' }}>{t('bento.title2')}</span>
         </h2>
         <div className="line-accent mt-6" style={{ maxWidth:280 }} />
       </div>
@@ -518,12 +564,12 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
           <img src={imgUser3} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" />
           <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),rgba(10,10,18,.4) 50%,transparent)' }} />
           <div className="absolute bottom-6 left-6 right-6 z-10">
-            <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Phones</span>
+            <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('bento.phones.label')}</span>
             <h3 className="mt-2 font-serif text-[1.7rem] leading-tight" style={{ color:'var(--text-primary)' }}>
-              Latest iPhones &amp; Galaxy
+              {t('bento.latest')}
             </h3>
             <span className="mt-3 inline-flex items-center gap-1.5 text-[12px] transition-colors group-hover:text-blue-400" style={{ color:'var(--text-secondary)' }}>
-              Explore <ArrowRight size={12} />
+              {t('bento.explore')} <ArrowRight size={12} />
             </span>
           </div>
         </button>
@@ -540,8 +586,8 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
             <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),transparent)' }} />
             <div className="absolute bottom-4 left-4 z-10">
               <span style={{ color:'var(--blue-bright)' }}>{item.icon}</span>
-              <h3 className="mt-2 text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{item.label}</h3>
-              <p className="text-[12px]" style={{ color:'var(--text-muted)' }}>{item.sub}</p>
+              <h3 className="mt-2 text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{t(`bento.${item.key}.label`)}</h3>
+              <p className="text-[12px]" style={{ color:'var(--text-muted)' }}>{t(`bento.${item.key}.sub`)}</p>
             </div>
           </button>
         ))}
@@ -552,20 +598,20 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
 
 // ── Showroom feature ──────────────────────────────────────────────────────────
 function ShowroomFeature() {
+  const { t } = useLang();
   return (
     <section className="section border-y" style={{ borderColor:'var(--border)', background:'var(--bg-card)' }}>
       <div className="mx-auto flex max-w-[1440px] flex-col gap-12 px-5 md:flex-row md:items-center md:px-12">
         <div className="reveal-up w-full md:w-1/2">
-          <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Chitwan · Nepal</span>
+          <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('showroom.eyebrow')}</span>
           <h2 className="mt-4 font-serif" style={{ fontSize:'clamp(2rem,4vw,3.2rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-            Come see it<br /><span style={{ color:'var(--blue-bright)' }}>in person.</span>
+            {t('showroomFeature.title1')}<br /><span style={{ color:'var(--blue-bright)' }}>{t('showroomFeature.title2')}</span>
           </h2>
           <p className="mt-5 max-w-md text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-            Visit Apple Guru on Indra Dev Marga. Hold the devices. Ask real questions.
-            Leave with confidence about what you bought.
+            {t('showroomFeature.subhead')}
           </p>
           <div className="mt-8 grid max-w-xs grid-cols-2 gap-6 border-t pt-6" style={{ borderColor:'var(--border)' }}>
-            {[['3+','Years of trust'],['10k+','Happy customers']].map(([n,l]) => (
+            {[['3+',t('showroomFeature.stat1')],['10k+',t('showroomFeature.stat2')]].map(([n,l]) => (
               <div key={l}>
                 <p className="font-serif text-[2.4rem]" style={{ color:'var(--text-primary)' }}>{n}</p>
                 <p className="mt-1 text-[12px]" style={{ color:'var(--text-muted)' }}>{l}</p>
@@ -574,7 +620,7 @@ function ShowroomFeature() {
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
             <Btn variant="primary" onClick={() => wa('Hello Apple Guru. I am planning to visit the showroom in Chitwan.')}>
-              Plan a visit <MessageCircle size={13} />
+              {t('showroomFeature.planVisit')} <MessageCircle size={13} />
             </Btn>
             <a
               href={MAPS_URL}
@@ -582,7 +628,7 @@ function ShowroomFeature() {
               rel="noreferrer"
               className="btn btn-outline"
             >
-              <Navigation size={13} /> Directions
+              <Navigation size={13} /> {t('showroomFeature.directions')}
             </a>
           </div>
         </div>
@@ -595,8 +641,8 @@ function ShowroomFeature() {
           />
           <div className="glass absolute bottom-5 left-5 right-5 flex items-center justify-between rounded-xl p-4">
             <div>
-              <p className="text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>Location</p>
-              <p className="mt-0.5 text-[13px]" style={{ color:'var(--text-secondary)' }}>Indra Dev Marga, Bharatpur, Chitwan</p>
+              <p className="text-[11px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('showroomFeature.location')}</p>
+              <p className="mt-0.5 text-[13px]" style={{ color:'var(--text-secondary)' }}>{t('showroomFeature.address')}</p>
             </div>
             <a href={MAPS_URL} target="_blank" rel="noreferrer" style={{ color:'var(--blue-bright)' }}>
               <Navigation size={17} />
@@ -610,13 +656,14 @@ function ShowroomFeature() {
 
 // ── User gallery strip ────────────────────────────────────────────────────────
 function GalleryStrip() {
+  const { t } = useLang();
   const imgs = [imgUser1,imgUser2,imgUser3,imgUser4,imgUser5,imgUser1,imgUser2];
   return (
     <section className="section mx-auto max-w-[1440px] px-5 md:px-12">
       <div className="reveal mb-8">
-        <p className="mb-3 text-[11px] font-semibold tracking-[.12em] uppercase" style={{ color:'var(--text-muted)' }}>At the showroom</p>
+        <p className="mb-3 text-[11px] font-semibold tracking-[.12em] uppercase" style={{ color:'var(--text-muted)' }}>{t('gallery.eyebrow')}</p>
         <h2 className="font-serif" style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', lineHeight:1.1, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-          Real devices.<br /><span style={{ color:'var(--blue-bright)' }}>Real people.</span>
+          {t('gallery.title1')}<br /><span style={{ color:'var(--blue-bright)' }}>{t('gallery.title2')}</span>
         </h2>
         <div className="line-accent mt-5" style={{ maxWidth:200 }} />
       </div>
@@ -686,6 +733,7 @@ function ProductCard({ p, onSelect }: { p:Product; onSelect:(p:Product)=>void })
 
 // ── Product catalog ───────────────────────────────────────────────────────────
 function Catalog({ onSelect }: { onSelect:(p:Product)=>void }) {
+  const { t } = useLang();
   const [filter, setFilter] = useState('Apple');
   const tabs = ['Apple','Samsung','Trending','Other devices'];
   const filtered =
@@ -702,12 +750,12 @@ function Catalog({ onSelect }: { onSelect:(p:Product)=>void }) {
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
       <div style={{ maxWidth:640 }}>
-        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Catalog</span>
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('catalog.eyebrow')}</span>
         <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-          Find your<br /><span style={{ color:'var(--blue-bright)' }}>next device.</span>
+          {t('catalog.title1')}<br /><span style={{ color:'var(--blue-bright)' }}>{t('catalog.title2')}</span>
         </h1>
         <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-          Every iPhone, Galaxy, and accessory we carry — genuine stock, honest pricing, and every device available to try in the Bharatpur showroom.
+          {t('catalog.subhead')}
         </p>
       </div>
 
@@ -720,7 +768,7 @@ function Catalog({ onSelect }: { onSelect:(p:Product)=>void }) {
         <h2 className="font-serif text-[1.4rem]" style={{ letterSpacing:'-.02em', color:'var(--text-primary)' }}>
           {headings[filter]}
         </h2>
-        <span className="text-[12px]" style={{ color:'var(--text-muted)' }}>{filtered.length} devices</span>
+        <span className="text-[12px]" style={{ color:'var(--text-muted)' }}>{filtered.length} {t('catalog.devices')}</span>
       </div>
       {filtered.length ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -738,6 +786,7 @@ function Catalog({ onSelect }: { onSelect:(p:Product)=>void }) {
 
 // ── Exchange page ─────────────────────────────────────────────────────────────
 function ExchangePage({ target, clearTarget, onOpenGuide }: { target:Product|null; clearTarget:()=>void; onOpenGuide:()=>void }) {
+  const { t } = useLang();
   const models = [
     'iPhone 17 Pro Max','iPhone Air','iPhone 15 Pro Max','iPhone 15 Pro',
     'iPhone 15','iPhone 14 Pro Max','iPhone 14','iPhone 13 Pro Max',
@@ -802,14 +851,14 @@ function ExchangePage({ target, clearTarget, onOpenGuide }: { target:Product|nul
       {/* Estimator */}
       <div className="mt-10 grid gap-6 rounded-2xl border p-6 md:grid-cols-2 md:p-10" style={{ background:'var(--bg-card)', borderColor:'var(--border)' }}>
         <div>
-          <h2 className="font-serif text-[1.5rem]" style={{ color:'var(--text-primary)' }}>Value estimator</h2>
-          <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-muted)' }}>Pick your device and its condition below for a ballpark number — not a final price.</p>
+          <h2 className="font-serif text-[1.5rem]" style={{ color:'var(--text-primary)' }}>{t('exchange.heading')}</h2>
+          <p className="mt-1.5 text-[13px]" style={{ color:'var(--text-muted)' }}>{t('exchange.subhead')}</p>
           <button
             onClick={onOpenGuide}
             className="mt-2 inline-flex items-center gap-1 text-[12.5px] font-semibold underline underline-offset-2"
             style={{ color:'var(--blue-bright)' }}
           >
-            How we calculate your trade-in value <ArrowRight size={12} />
+            {t('exchange.guideLink')} <ArrowRight size={12} />
           </button>
 
           <label className="mt-7 block text-[13px] font-semibold" style={{ color:'var(--text-secondary)' }}>Your current device</label>
@@ -911,19 +960,20 @@ function ExchangePage({ target, clearTarget, onOpenGuide }: { target:Product|nul
 
 // ── Repair page ───────────────────────────────────────────────────────────────
 function RepairPage() {
+  const { t } = useLang();
   const [open, setOpen] = useState<string|null>(null);
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
       <div style={{ maxWidth:640 }}>
-        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Repair</span>
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('repair.eyebrow')}</span>
         <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-          Repair with<br /><span style={{ color:'var(--blue-bright)' }}>a clear plan.</span>
+          {t('repair.title1')}<br /><span style={{ color:'var(--blue-bright)' }}>{t('repair.title2')}</span>
         </h1>
         <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-          Diagnosis first, honest options second, precision work third. We don't guess.
+          {t('repair.subhead')}
         </p>
         <Btn className="mt-7" variant="primary" onClick={()=>wa('Hello Apple Guru. I want to book a repair.')}>
-          Book a repair <ArrowRight size={14} />
+          {t('repair.bookBtn')} <ArrowRight size={14} />
         </Btn>
       </div>
 
@@ -999,26 +1049,27 @@ function RepairPage() {
 
 // ── Showroom page ─────────────────────────────────────────────────────────────
 function ShowroomPage() {
+  const { t } = useLang();
   const hours = [
     ['Sunday – Friday', '10:00 AM – 7:00 PM'],
     ['Saturday',         '11:00 AM – 5:00 PM'],
   ];
   const expect = [
-    { Icon:Smartphone, title:'Try before you buy',  text:'Hold every model side by side before deciding.' },
-    { Icon:ShieldCheck, title:'Genuine stock only',  text:'Every device we sell is authentic, never grey-market.' },
-    { Icon:Users,       title:'Real conversations',  text:'Talk to staff who use this gear every day, not a script.' },
-    { Icon:RefreshCw,   title:'Exchange on the spot', text:'Bring your old phone and walk out with the new one.' },
+    { Icon:Smartphone, title:t('showroomPage.expect1t'),  text:t('showroomPage.expect1d') },
+    { Icon:ShieldCheck, title:t('showroomPage.expect2t'),  text:t('showroomPage.expect2d') },
+    { Icon:Users,       title:t('showroomPage.expect3t'),  text:t('showroomPage.expect3d') },
+    { Icon:RefreshCw,   title:t('showroomPage.expect4t'), text:t('showroomPage.expect4d') },
   ];
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
       <div className="grid gap-12 md:grid-cols-2 md:items-center">
         <div className="reveal-up">
-          <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Our Showroom</span>
+          <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('showroomPage.eyebrow')}</span>
           <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5vw,4.5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-            One original<br /><span style={{ color:'var(--blue-bright)' }}>showroom.</span>
+            {t('showroomPage.title1')}<br /><span style={{ color:'var(--blue-bright)' }}>{t('showroomPage.title2')}</span>
           </h1>
           <p className="mt-5 max-w-md text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-            Come to Indra Dev Marga. Hold the phones side by side. Talk to someone who uses this stuff every day.
+            {t('showroomPage.subhead')}
           </p>
           <div className="mt-8 space-y-4">
             {[
@@ -1048,10 +1099,10 @@ function ShowroomPage() {
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Btn variant="primary" onClick={()=>wa('Hello Apple Guru. I am planning to visit the Chitwan showroom.')}>
-              Plan a visit <MessageCircle size={13} />
+              {t('showroomPage.planVisit')} <MessageCircle size={13} />
             </Btn>
             <a href={MAPS_URL} target="_blank" rel="noreferrer" className="btn btn-outline">
-              <Navigation size={13} /> Get directions
+              <Navigation size={13} /> {t('showroomPage.directions')}
             </a>
           </div>
         </div>
@@ -1074,7 +1125,7 @@ function ShowroomPage() {
 
       {/* Real photo gallery — NO AI showroom image */}
       <div className="reveal mt-16 mb-6">
-        <h2 className="font-serif text-[1.4rem]" style={{ color:'var(--text-primary)' }}>Inside the showroom</h2>
+        <h2 className="font-serif text-[1.4rem]" style={{ color:'var(--text-primary)' }}>{t('showroomPage.inside')}</h2>
       </div>
       <div className="stagger grid grid-cols-2 gap-3 md:grid-cols-4">
         {[showroomDay, imgUser1, imgUser4, imgUser5].map((src,i)=>(
@@ -1101,24 +1152,25 @@ function ShowroomPage() {
 
 // ── About page ───────────────────────────────────────────────────────────────
 function AboutPage({ goto }: { goto:(p:PageView)=>void }) {
+  const { t } = useLang();
   const values = [
-    { Icon:ShieldCheck, title:'Genuine, always', text:'Every device we sell or trade-in is authentic. No grey-market imports, no exceptions.' },
-    { Icon:Handshake,   title:'Straight talk',   text:'We tell you what a phone is actually worth and what it actually needs — no upselling.' },
-    { Icon:Heart,       title:'Local, for locals', text:'Built for Chitwan. We speak your language, literally and otherwise.' },
-    { Icon:Award,       title:'Hands that know', text:'Our technicians work on these devices daily, not occasionally.' },
+    { Icon:ShieldCheck, title:t('about.value1t'), text:t('about.value1d') },
+    { Icon:Handshake,   title:t('about.value2t'), text:t('about.value2d') },
+    { Icon:Heart,       title:t('about.value3t'), text:t('about.value3d') },
+    { Icon:Award,       title:t('about.value4t'), text:t('about.value4d') },
   ];
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
       <div style={{ maxWidth:680 }} className="reveal-up">
-        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>About Us</span>
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('about.eyebrow')}</span>
         <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-          Chitwan's own<br /><span style={{ color:'var(--blue-bright)' }}>tech store.</span>
+          {t('about.title1')}<br /><span style={{ color:'var(--blue-bright)' }}>{t('about.title2')}</span>
         </h1>
         <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-          Apple Guru started with a simple idea — Bharatpur shouldn't need Kathmandu for a genuine iPhone, an honest trade-in, or a same-day repair. We built a showroom where you can hold the device before you buy it, talk to someone who actually knows it, and get a straight answer about what it's worth.
+          {t('about.p1')}
         </p>
         <p className="mt-4 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-          We carry Apple and Samsung flagships, run our own exchange and repair counter in-house, and stand behind every device that leaves our store.
+          {t('about.p2')}
         </p>
       </div>
 
@@ -1133,13 +1185,13 @@ function AboutPage({ goto }: { goto:(p:PageView)=>void }) {
       </div>
 
       <div className="reveal mt-16 rounded-2xl border p-8 text-center md:p-12" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
-        <h2 className="font-serif" style={{ fontSize:'clamp(1.6rem,3vw,2.2rem)', color:'var(--text-primary)' }}>Come say hello.</h2>
+        <h2 className="font-serif" style={{ fontSize:'clamp(1.6rem,3vw,2.2rem)', color:'var(--text-primary)' }}>{t('about.ctaHeading')}</h2>
         <p className="mx-auto mt-3 max-w-md text-[14px] leading-6" style={{ color:'var(--text-secondary)' }}>
-          The best way to know us is to walk in. Indra Dev Marga, Bharatpur.
+          {t('about.ctaSub')}
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
-          <Btn variant="primary" onClick={()=>goto('showroom')}>Visit the showroom <ArrowRight size={13} /></Btn>
-          <Btn variant="outline" onClick={()=>wa('Hello Apple Guru. I wanted to ask about your store.')}>Message us <MessageCircle size={13} /></Btn>
+          <Btn variant="primary" onClick={()=>goto('showroom')}>{t('about.visitShowroom')} <ArrowRight size={13} /></Btn>
+          <Btn variant="outline" onClick={()=>wa('Hello Apple Guru. I wanted to ask about your store.')}>{t('about.messageUs')} <MessageCircle size={13} /></Btn>
         </div>
       </div>
     </section>
@@ -1148,35 +1200,36 @@ function AboutPage({ goto }: { goto:(p:PageView)=>void }) {
 
 // ── Warranty & service plans page ───────────────────────────────────────────────
 function WarrantyPage({ goto }: { goto:(p:PageView)=>void }) {
+  const { t } = useLang();
   const plans = [
     {
-      title: 'Standard warranty',
-      badge: 'Included',
-      desc: 'Comes with every new device we sell — no extra cost.',
-      points: ['Covers manufacturing defects', 'Free diagnostic at our counter', 'Genuine replacement parts only'],
+      title: t('warranty.plan1.title'),
+      badge: t('warranty.plan1.badge'),
+      desc: t('warranty.plan1.desc'),
+      points: [t('warranty.plan1.p1'), t('warranty.plan1.p2'), t('warranty.plan1.p3')],
     },
     {
-      title: 'Extended protection',
-      badge: 'Optional',
-      desc: 'Added coverage for accidental damage, on top of the standard warranty.',
-      points: ['Screen and battery coverage', 'Priority same-day service', 'Discounted accidental-damage repairs'],
+      title: t('warranty.plan2.title'),
+      badge: t('warranty.plan2.badge'),
+      desc: t('warranty.plan2.desc'),
+      points: [t('warranty.plan2.p1'), t('warranty.plan2.p2'), t('warranty.plan2.p3')],
     },
   ];
   const faqs = [
-    ['What does the standard warranty NOT cover?', 'Accidental damage — drops, water, or cracked screens — is not covered under the standard manufacturing warranty. Extended protection covers this.'],
-    ['How long does a warranty claim take?', 'Most diagnostics are done the same day you bring the device in. Repairs under warranty are typically completed within 24–48 hours.'],
-    ['Do I need the original receipt?', 'Yes — bring your purchase receipt or invoice from Apple Guru so we can verify the warranty period.'],
-    ['Can I buy the extended plan after I already bought the phone?', 'It is best added at the time of purchase, but ask our team — a short grace period may apply depending on the model.'],
+    [t('warranty.faq1.q'), t('warranty.faq1.a')],
+    [t('warranty.faq2.q'), t('warranty.faq2.a')],
+    [t('warranty.faq3.q'), t('warranty.faq3.a')],
+    [t('warranty.faq4.q'), t('warranty.faq4.a')],
   ];
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
       <div style={{ maxWidth:680 }} className="reveal-up">
-        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Warranty</span>
+        <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('warranty.eyebrow')}</span>
         <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-          Covered,<br /><span style={{ color:'var(--blue-bright)' }}>clearly explained.</span>
+          {t('warranty.title1')}<br /><span style={{ color:'var(--blue-bright)' }}>{t('warranty.title2')}</span>
         </h1>
         <p className="mt-5 text-[15px] leading-7" style={{ color:'var(--text-secondary)' }}>
-          Every device from Apple Guru comes with a standard warranty. Here's exactly what's covered, what isn't, and what to do if something goes wrong.
+          {t('warranty.subhead')}
         </p>
       </div>
 
@@ -1201,7 +1254,7 @@ function WarrantyPage({ goto }: { goto:(p:PageView)=>void }) {
       </div>
 
       <div className="reveal mt-16">
-        <h2 className="font-serif text-[1.5rem]" style={{ color:'var(--text-primary)' }}>Common questions</h2>
+        <h2 className="font-serif text-[1.5rem]" style={{ color:'var(--text-primary)' }}>{t('warranty.faqHeading')}</h2>
         <div className="mt-6 space-y-3">
           {faqs.map(([q,a])=>(
             <details key={q} className="group rounded-xl border p-4" style={{ borderColor:'var(--border)', background:'var(--bg-raised)' }}>
@@ -1218,8 +1271,8 @@ function WarrantyPage({ goto }: { goto:(p:PageView)=>void }) {
       </div>
 
       <div className="mt-12 flex flex-wrap gap-3">
-        <Btn variant="primary" onClick={()=>wa('Hello Apple Guru. I have a question about my warranty.')}>Ask about a claim <MessageCircle size={13} /></Btn>
-        <Btn variant="outline" onClick={()=>goto('repair')}>Go to Repair <ArrowRight size={13} /></Btn>
+        <Btn variant="primary" onClick={()=>wa('Hello Apple Guru. I have a question about my warranty.')}>{t('warranty.askClaim')} <MessageCircle size={13} /></Btn>
+        <Btn variant="outline" onClick={()=>goto('repair')}>{t('warranty.goRepair')} <ArrowRight size={13} /></Btn>
       </div>
     </section>
   );
@@ -1266,6 +1319,7 @@ function JournalPage({ onSelect }: { onSelect:(p:BlogPost)=>void }) {
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 function Footer({ goto }: { goto:(p:PageView)=>void }) {
+  const { t } = useLang();
   return (
     <footer className="border-t px-5 pb-24 pt-14 md:px-12 md:pb-14" style={{ borderColor:'var(--border)', background:'var(--bg-card)' }}>
       <div className="mx-auto max-w-[1440px]">
@@ -1278,7 +1332,7 @@ function Footer({ goto }: { goto:(p:PageView)=>void }) {
             <div className="deva-bar mt-4" style={{ color:'var(--text-muted)' }}>चितवनको भरोसेमान्द टेक स्टोर</div>
           </div>
           <div className="flex flex-col gap-3">
-            <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--text-primary)' }}>Services</span>
+            <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--text-primary)' }}>{t('footer.services')}</span>
             {(['phones','exchange','repair'] as PageView[]).map(p=>(
               <button key={p} onClick={()=>goto(p)} className="text-left text-[14px] capitalize transition-colors"
                 style={{ color:'var(--text-muted)' }}
@@ -1288,7 +1342,7 @@ function Footer({ goto }: { goto:(p:PageView)=>void }) {
             ))}
           </div>
           <div className="flex flex-col gap-3">
-            <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--text-primary)' }}>Company</span>
+            <span className="text-[12px] font-semibold tracking-[.08em] uppercase" style={{ color:'var(--text-primary)' }}>{t('footer.company')}</span>
             {[['Journal','insights'],['Showroom','showroom'],['About','about'],['Warranty','warranty']].map(([label,p])=>(
               <button key={p} onClick={()=>goto(p as PageView)} className="text-left text-[14px] transition-colors"
                 style={{ color:'var(--text-muted)' }}
@@ -1300,7 +1354,7 @@ function Footer({ goto }: { goto:(p:PageView)=>void }) {
               style={{ color:'var(--text-muted)' }}
               onMouseEnter={e=>(e.currentTarget as HTMLElement).style.color='var(--blue-bright)'}
               onMouseLeave={e=>(e.currentTarget as HTMLElement).style.color='var(--text-muted)'}
-            >Contact</a>
+            >{t('footer.contact')}</a>
           </div>
         </div>
         <div className="divider mt-10" />
@@ -1689,14 +1743,16 @@ function AppContent() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <WouterRouter base="">
-          <ErrorBoundary>
-            <AppContent />
-          </ErrorBoundary>
-        </WouterRouter>
-        <Toaster />
-      </TooltipProvider>
+      <LangProvider>
+        <TooltipProvider>
+          <WouterRouter base="">
+            <ErrorBoundary>
+              <AppContent />
+            </ErrorBoundary>
+          </WouterRouter>
+          <Toaster />
+        </TooltipProvider>
+      </LangProvider>
     </QueryClientProvider>
   );
 }
