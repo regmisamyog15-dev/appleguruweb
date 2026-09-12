@@ -539,7 +539,6 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
 
 // ── Home bento grid ───────────────────────────────────────────────────────────
 const bentoItems = [
-const bentoItems = [
   { key:'phones', label:'Phones', sub:'iPhone & Galaxy', icon:<Smartphone size={15}/>, img:imgUser1, page:'phones' as PageView },
   { key:'exchange', label:'Exchange', sub:'Trade in', icon:<RefreshCw size={15}/>, img:imgExchange, video:vidExchangeHero, page:'exchange' as PageView },
   { key:'repair', label:'Repair', sub:'Same-day service', icon:<Wrench size={15}/>, img:imgRepair, page:'repair' as PageView },
@@ -671,7 +670,6 @@ function ShowroomFeature() {
 }
 
 // ── User gallery strip ────────────────────────────────────────────────────────
-function GalleryStrip() {
 function GalleryStrip() {
   const { t } = useLang();
   const imgs = [
