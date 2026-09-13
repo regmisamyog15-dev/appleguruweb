@@ -1,4 +1,5 @@
 import { LangProvider, useLang } from './i18n';
+import { ThemeProvider, useTheme } from './theme';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   type ReactNode, useEffect, useMemo, useState, useRef, type TouchEvent
@@ -9,7 +10,7 @@ import {
   ArrowRight, ArrowUpRight, ArrowLeft, Check, ChevronDown, CircleHelp,
   FileText, MapPin, Menu, MessageCircle, Minus, Package, Phone, Plus, Search,
   X, Wrench, Smartphone, Navigation, Clock3, RefreshCw, Pause, Play,
-  Sparkles, Watch, ShieldCheck, Users, Award, Heart, Handshake, Globe
+  Sparkles, Watch, ShieldCheck, Users, Award, Heart, Handshake, Globe, Sun, Moon
 } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -103,6 +104,24 @@ function Logo() {
 }
 
 // ── Header ───────────────────────────────────────────────────────────────────
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const isDark = theme === 'dark';
+  return (
+    <button
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+      title={isDark ? 'Light mode' : 'Dark mode'}
+      className="grid place-items-center rounded-full p-2 transition-all"
+      style={{ border:'1px solid var(--border-hover)', color:'var(--text-secondary)', background:'var(--bg-raised)' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)'; (e.currentTarget as HTMLElement).style.color='var(--text-primary)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-hover)'; (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'; }}
+    >
+      {isDark ? <Sun size={15} /> : <Moon size={15} />}
+    </button>
+  );
+}
+
 function LanguageSwitcher() {
   const { lang, setLang } = useLang();
   const [open, setOpen] = useState(false);
@@ -167,7 +186,7 @@ function Header({ page, goto, openSearch }: {
       <header
         className="sticky top-0 z-40 transition-all duration-300"
         style={{
-          background: scrolled ? 'rgba(10,10,18,.97)' : 'rgba(10,10,18,.85)',
+          background: scrolled ? 'var(--glass-bg)' : 'transparent',
           backdropFilter: 'blur(20px)',
           borderBottom: '1px solid var(--border)'
         }}
@@ -190,6 +209,7 @@ function Header({ page, goto, openSearch }: {
 
           {/* Right controls */}
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <LanguageSwitcher />
             {/* Search — prominent bar on desktop */}
             <button
@@ -272,7 +292,7 @@ function BottomNav() {
   return (
     <nav
       className="fixed bottom-0 z-40 grid h-14 w-full grid-cols-2 border-t md:hidden"
-      style={{ background:'rgba(10,10,18,.97)', backdropFilter:'blur(16px)', borderColor:'var(--border)' }}
+      style={{ background:'var(--glass-bg)', backdropFilter:'blur(16px)', borderColor:'var(--border)' }}
     >
       {[
         { href:'tel:9821552339', icon:<Phone size={15}/>, label:'Call Us' },
@@ -1775,16 +1795,18 @@ function AppContent() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <LangProvider>
-        <TooltipProvider>
-          <WouterRouter base="">
-            <ErrorBoundary>
-              <AppContent />
-            </ErrorBoundary>
-          </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </LangProvider>
+      <ThemeProvider>
+        <LangProvider>
+          <TooltipProvider>
+            <WouterRouter base="">
+              <ErrorBoundary>
+                <AppContent />
+              </ErrorBoundary>
+            </WouterRouter>
+            <Toaster />
+          </TooltipProvider>
+        </LangProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
