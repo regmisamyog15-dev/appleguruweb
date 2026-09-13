@@ -556,8 +556,8 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
           className="reveal-up group relative col-span-2 row-span-2 overflow-hidden rounded-2xl text-left card"
           style={{ minHeight:320 }}
         >
-          <img src={gifHeroPhones} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-105" />
-          <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),rgba(10,10,18,.4) 50%,transparent)' }} />
+          <img src={gifHeroPhones} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg) 4%,transparent 55%)' }} />
           <div className="absolute bottom-6 left-6 right-6 z-10">
             <span className="text-[11px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('bento.phones.label')}</span>
             <h3 className="mt-2 font-serif text-[1.7rem] leading-tight" style={{ color:'var(--text-primary)' }}>
@@ -584,12 +584,12 @@ function HomeBento({ goto }: { goto: (p: PageView) => void }) {
                 loop
                 muted
                 playsInline
-                className="absolute inset-0 h-full w-full object-cover opacity-45 transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
             ) : (
-              <img src={item.img} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35 transition-transform duration-700 group-hover:scale-105" />
+              <img src={item.img} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
             )}
-            <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg),transparent)' }} />
+            <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg) 10%,transparent 60%)' }} />
             <div className="absolute bottom-4 left-4 z-10">
               <span style={{ color:'var(--blue-bright)' }}>{item.icon}</span>
               <h3 className="mt-2 text-[14px] font-semibold" style={{ color:'var(--text-primary)' }}>{t(`bento.${item.key}.label`)}</h3>
