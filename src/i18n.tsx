@@ -92,6 +92,8 @@ export const translations: Record<Lang, Dict> = {
     'warranty.faq4.a': 'It is best added at the time of purchase, but ask our team — a short grace period may apply depending on the model.',
 
     'footer.services': 'Services', 'footer.company': 'Company', 'footer.contact': 'Contact',
+    'journal.eyebrow': 'Journal', 'journal.title1': 'Useful things', 'journal.title2': 'to know.',
+    'journal.read': 'Read',
   },
   ne: {
     'nav.home': 'गृहपृष्ठ', 'nav.phones': 'फोनहरू', 'nav.exchange': 'एक्सचेन्ज',
@@ -180,6 +182,8 @@ export const translations: Record<Lang, Dict> = {
     'warranty.faq4.a': 'यो किन्ने समयमै थप्नु उत्तम हो, तर हाम्रो टोलीलाई सोध्नुहोस् — मोडेल अनुसार छोटो मौका अवधि लागू हुन सक्छ।',
 
     'footer.services': 'सेवाहरू', 'footer.company': 'कम्पनी', 'footer.contact': 'सम्पर्क',
+    'journal.eyebrow': 'जर्नल', 'journal.title1': 'जान्नुपर्ने', 'journal.title2': 'उपयोगी कुराहरू।',
+    'journal.read': 'पढ्नुहोस्',
   },
 };
 

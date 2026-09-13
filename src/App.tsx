@@ -1338,11 +1338,12 @@ function WarrantyPage({ goto }: { goto:(p:PageView)=>void }) {
 
 // ── Journal page ──────────────────────────────────────────────────────────────
 function JournalPage({ onSelect }: { onSelect:(p:BlogPost)=>void }) {
+  const { t, lang } = useLang();
   return (
     <section className="mx-auto max-w-[1440px] px-5 pb-24 pt-12 md:px-12 md:pt-14">
-      <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>Journal</span>
+      <span className="text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>{t('journal.eyebrow')}</span>
       <h1 className="mt-4 font-serif" style={{ fontSize:'clamp(2.5rem,5.5vw,5rem)', lineHeight:.97, letterSpacing:'-.03em', color:'var(--text-primary)' }}>
-        Useful things<br /><span style={{ color:'var(--blue-bright)' }}>to know.</span>
+        {t('journal.title1')}<br /><span style={{ color:'var(--blue-bright)' }}>{t('journal.title2')}</span>
       </h1>
       <div className="mt-12">
         {blogPosts.map((post,i)=>(
@@ -1359,14 +1360,14 @@ function JournalPage({ onSelect }: { onSelect:(p:BlogPost)=>void }) {
               </span>
               <strong className="mt-2.5 block max-w-3xl font-serif leading-tight transition-colors group-hover:text-blue-400"
                 style={{ fontSize:'clamp(1.1rem,2.2vw,1.7rem)', color:'var(--text-primary)' }}>
-                {post.title}
+                {(lang==='ne' && post.title_ne) || post.title}
               </strong>
               <span className="mt-2.5 block max-w-2xl text-[13.5px] leading-6" style={{ color:'var(--text-muted)' }}>
-                {post.excerpt}
+                {(lang==='ne' && post.excerpt_ne) || post.excerpt}
               </span>
             </span>
             <span className="flex items-center gap-1.5 text-[11px] font-medium transition-colors group-hover:text-blue-400 md:justify-end" style={{ color:'var(--text-muted)' }}>
-              Read <ArrowUpRight size={12} />
+              {t('journal.read')} <ArrowUpRight size={12} />
             </span>
           </button>
         ))}
@@ -1496,7 +1497,9 @@ function renderInlineBold(text: string) {
 }
 
 function JournalModal({ post, onClose }: { post:BlogPost|null; onClose:()=>void }) {
+  const { lang } = useLang();
   if (!post) return null;
+  const content = (lang==='ne' && post.content_ne) || post.content;
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -1515,13 +1518,13 @@ function JournalModal({ post, onClose }: { post:BlogPost|null; onClose:()=>void 
           <button onClick={onClose} style={{ color:'var(--text-muted)' }}><X size={16} /></button>
         </div>
         <h2 className="mt-6 font-serif" style={{ fontSize:'clamp(1.6rem,3vw,2.4rem)', lineHeight:1.15, letterSpacing:'-.02em', color:'var(--text-primary)' }}>
-          {post.title}
+          {(lang==='ne' && post.title_ne) || post.title}
         </h2>
         <p className="mt-5 border-l-2 pl-4 text-[14px] leading-7 italic" style={{ borderColor:'var(--blue)', color:'var(--text-secondary)' }}>
-          {post.keyTakeaway}
+          {(lang==='ne' && post.keyTakeaway_ne) || post.keyTakeaway}
         </p>
         <div className="mt-7 space-y-5">
-          {post.content.map((para,i)=>(
+          {content.map((para,i)=>(
             <p key={i} className="text-[14.5px] leading-8" style={{ color:'var(--text-secondary)' }}>{renderInlineBold(para)}</p>
           ))}
         </div>

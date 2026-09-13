@@ -45,15 +45,19 @@ export interface BlogPost {
   id: string;
   slug: string;
   title: string;
+  title_ne?: string;
   category: 'Buying Guides' | 'Exchange' | 'Repair' | 'Technology' | 'Apple' | 'Samsung';
   excerpt: string;
+  excerpt_ne?: string;
   readTime: string;
   date: string;
   coverImage: string;
   author: string;
   content: string[];
+  content_ne?: string[];
   tags: string[];
   keyTakeaway: string;
+  keyTakeaway_ne?: string;
 }
 
 export interface FunFact {
