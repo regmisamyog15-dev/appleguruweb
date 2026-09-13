@@ -413,112 +413,80 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
           src={s.img}
           alt=""
           className="absolute top-0 right-0 h-full"
-          style={{ width:'62%', objectFit:'cover', objectPosition:'center' }}
-          initial={{ opacity:0, scale:1.08 }}
-          animate={{ opacity:.72, scale:1 }}
+          style={{ width:'64%', objectFit:'cover', objectPosition:'center' }}
+          initial={{ opacity:0, scale:1.06 }}
+          animate={{ opacity:.9, scale:1 }}
           exit={{ opacity:0, scale:1.02 }}
-          transition={{ duration:.9, ease:[0.16,1,0.3,1] }}
+          transition={{ duration:1, ease:[0.16,1,0.3,1] }}
         />
       </AnimatePresence>
-      {/* Strong left-to-right gradient so text stays crisp */}
-      <div className="absolute inset-0" style={{ background:'linear-gradient(90deg,var(--bg) 38%,rgba(10,10,18,.55) 62%,transparent 100%)' }} />
+      {/* Soft left-to-right fade — airier than a hard vignette */}
+      <div className="absolute inset-0" style={{ background:'linear-gradient(90deg,var(--bg) 32%,rgba(10,10,18,.35) 58%,transparent 92%)' }} />
       {/* Bottom fade */}
-      <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg) 0%,transparent 40%)' }} />
-      {/* Blue glow accent */}
-      <div className="blue-glow" style={{ width:420, height:420, top:'15%', right:'30%', opacity:.22 }} />
+      <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg) 0%,transparent 32%)' }} />
 
       {/* Content */}
-      <div className="relative mx-auto flex flex-col px-5 md:px-12 max-w-[1440px]"
-        style={{ minHeight:'min(760px,94dvh)', paddingTop:64, paddingBottom:40 }}>
+      <div className="relative mx-auto flex flex-col px-6 md:px-14 max-w-[1440px]"
+        style={{ minHeight:'min(760px,94dvh)', paddingTop:64, paddingBottom:44 }}>
 
         {/* Text cluster — grouped and vertically centered, like Apple's own
             hero banners, instead of being spread across the full height */}
-        <div className="flex flex-1 flex-col justify-center" style={{ maxWidth:680 }}>
-          {/* Tag */}
-          <div className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full shrink-0" style={{ background:'var(--blue-bright)' }} />
-            <span key={`tag-${idx}`} className="page-reveal text-[12px] font-semibold tracking-[.1em] uppercase" style={{ color:'var(--blue-bright)' }}>
-              {s.tag}
-            </span>
-          </div>
+        <div className="flex flex-1 flex-col justify-center" style={{ maxWidth:620 }}>
+          {/* Eyebrow */}
+          <span key={`tag-${idx}`} className="page-reveal text-[13px] font-medium tracking-[.14em] uppercase" style={{ color:'var(--blue-bright)' }}>
+            {s.tag}
+          </span>
 
           {/* Headline */}
           <h1
             key={`h-${idx}`}
-            className="page-reveal font-serif mt-5"
-            style={{ fontSize:'clamp(2.8rem,6.5vw,6rem)', lineHeight:.96, letterSpacing:'-.03em', color:'var(--text-primary)' }}
+            className="page-reveal font-serif mt-4"
+            style={{ fontSize:'clamp(3rem,7vw,6.5rem)', lineHeight:.95, letterSpacing:'-.035em', color:'var(--text-primary)' }}
           >
             {s.title}<br />
             <span style={{ color:'var(--blue-bright)' }}>{s.accent}</span>
           </h1>
           <p
             key={`p-${idx}`}
-            className="page-reveal mt-6 text-[16px] leading-7"
-            style={{ maxWidth:420, color:'var(--text-secondary)', animationDelay:'80ms' }}
+            className="page-reveal mt-5 text-[17px] leading-7"
+            style={{ maxWidth:380, color:'var(--text-secondary)', animationDelay:'80ms', fontWeight:300 }}
           >
             {s.body}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-9 flex flex-wrap items-center gap-6">
             <Btn variant="primary" onClick={() => goto(s.action)}>
-              {s.cta} <ArrowRight size={15} />
+              {s.cta}
             </Btn>
-            <Btn variant="outline" onClick={() => wa(`Hello Apple Guru. I am interested in ${s.tag}.`)}>
-              <MessageCircle size={14} /> {t('hero.askUs')}
-            </Btn>
-          </div>
-          <div className="mt-6 flex items-center gap-2 text-[12px]" style={{ color:'var(--text-muted)' }}>
-            <MapPin size={12} style={{ color:'var(--blue)' }} />
-            {t('hero.locationLine')}
+            <button
+              onClick={() => wa(`Hello Apple Guru. I am interested in ${s.tag}.`)}
+              className="group flex items-center gap-1 text-[15px] font-medium transition-colors"
+              style={{ color:'var(--blue-bright)' }}
+            >
+              {t('hero.askUs')}
+              <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+            </button>
           </div>
         </div>
 
-        {/* Controls — pinned to the bottom, separate from the text cluster */}
-        <div className="mt-10">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {[
-                { icon:<ArrowLeft size={16}/>, fn:()=>jump(idx-1), label:'Prev' },
-                { icon:<ArrowRight size={16}/>, fn:()=>jump(idx+1), label:'Next' },
-                { icon: playing ? <Pause size={14}/> : <Play size={14}/>, fn:()=>setPlaying(v=>!v), label: playing ? 'Pause' : 'Play' },
-              ].map(({ icon, fn, label }) => (
-                <button
-                  key={label}
-                  onClick={fn}
-                  aria-label={label}
-                  title={label}
-                  className="grid place-items-center rounded-full transition-all duration-150"
-                  style={{
-                    width:42, height:42,
-                    background:'rgba(255,255,255,.12)',
-                    border:'1.5px solid rgba(255,255,255,.25)',
-                    color:'#fff',
-                    backdropFilter:'blur(8px)',
-                  }}
-                  onMouseEnter={e=>{
-                    (e.currentTarget as HTMLElement).style.background='var(--blue)';
-                    (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)';
-                  }}
-                  onMouseLeave={e=>{
-                    (e.currentTarget as HTMLElement).style.background='rgba(255,255,255,.12)';
-                    (e.currentTarget as HTMLElement).style.borderColor='rgba(255,255,255,.25)';
-                  }}
-                >
-                  {icon}
-                </button>
-              ))}
-            </div>
-            <span className="rounded-full px-3 py-1 text-[12px] font-semibold tracking-wider" style={{ background:'rgba(255,255,255,.1)', color:'rgba(255,255,255,.7)', backdropFilter:'blur(8px)' }}>
-              {String(idx+1).padStart(2,'0')} / {String(slides.length).padStart(2,'0')}
-            </span>
-          </div>
-          {/* Progress scrubbers — thicker and more visible */}
-          <div className="flex gap-2">
+        {/* Controls — minimal, pinned to the bottom */}
+        <div className="mt-10 flex items-center gap-5">
+          <button
+            onClick={()=>setPlaying(v=>!v)}
+            aria-label={playing ? 'Pause' : 'Play'}
+            className="grid shrink-0 place-items-center rounded-full transition-opacity hover:opacity-100"
+            style={{ width:28, height:28, color:'var(--text-muted)', opacity:.7 }}
+          >
+            {playing ? <Pause size={13}/> : <Play size={13}/>}
+          </button>
+          {/* Progress scrubbers — thin, minimal */}
+          <div className="flex flex-1 gap-2">
             {slides.map((slide,i) => (
               <button
                 key={slide.tag}
                 onClick={() => jump(i)}
-                className="relative h-1 flex-1 overflow-hidden rounded-full"
-                style={{ background:'rgba(255,255,255,.18)' }}
+                aria-label={`Slide ${i+1}`}
+                className="relative h-[2px] flex-1 overflow-hidden rounded-full"
+                style={{ background:'rgba(255,255,255,.16)' }}
               >
                 <span
                   className="absolute left-0 top-0 h-full rounded-full"
@@ -531,6 +499,9 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
               </button>
             ))}
           </div>
+          <span className="shrink-0 text-[12px] tabular-nums" style={{ color:'var(--text-muted)' }}>
+            {String(idx+1).padStart(2,'0')}/{String(slides.length).padStart(2,'0')}
+          </span>
         </div>
       </div>
     </section>
