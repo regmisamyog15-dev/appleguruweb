@@ -389,7 +389,7 @@ a { -webkit-tap-highlight-color: transparent; text-decoration: none; color: inhe
   padding: 6px 2px;
   font-size: 12.5px;
   font-weight: 400;
-  color: rgba(245,245,247,0.72);
+  color: var(--text-secondary);
   background: transparent;
   border: none;
   letter-spacing: -0.01em;
@@ -403,12 +403,12 @@ a { -webkit-tap-highlight-color: transparent; text-decoration: none; color: inhe
   right: 2px;
   bottom: 0;
   height: 1px;
-  background: #f5f5f7;
+  background: var(--text-primary);
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 0.25s var(--ease-apple);
 }
-.nav-pill:hover { color: #f5f5f7; }
+.nav-pill:hover { color: var(--text-primary); }
 .nav-pill:hover::after { transform: scaleX(1); }
 .nav-pill.active { color: #f5f5f7; }
 .nav-pill.active::after { transform: scaleX(1); }
