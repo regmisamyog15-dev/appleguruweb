@@ -473,21 +473,19 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
 
         {/* Text cluster — grouped and vertically centered, like Apple's own
             hero banners, instead of being spread across the full height */}
-        <div className="flex flex-1 flex-col justify-center" style={{ maxWidth:620 }}>
-          {/* Eyebrow + callout */}
-          <div key={`tag-${idx}`} className="page-reveal flex flex-wrap items-center gap-2.5">
-            <span className="text-[13px] font-medium tracking-[.14em] uppercase" style={{ color:'var(--blue-bright)' }}>
+        <div className="flex flex-1 flex-col justify-center" style={{ maxWidth:600 }}>
+          {/* Eyebrow + callout — kept small and quiet */}
+          <div key={`tag-${idx}`} className="page-reveal flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-medium tracking-[.14em] uppercase" style={{ color:'var(--blue-bright)' }}>
               {s.tag}
             </span>
-            <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ background:'var(--blue-dim)', color:'var(--blue-bright)' }}>
-              {s.callout}
-            </span>
+            <span className="text-[10px] font-medium" style={{ color:'var(--text-muted)' }}>· {s.callout}</span>
           </div>
 
-          {/* Headline */}
+          {/* Headline — unchanged, the hero of the hero */}
           <h1
             key={`h-${idx}`}
-            className="page-reveal font-serif mt-4"
+            className="page-reveal font-serif mt-3"
             style={{ fontSize:'clamp(3rem,7vw,6.5rem)', lineHeight:.95, letterSpacing:'-.035em', color:'var(--text-primary)' }}
           >
             {s.title}<br />
@@ -495,28 +493,28 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
           </h1>
           <p
             key={`p-${idx}`}
-            className="page-reveal mt-5 text-[17px] leading-7"
-            style={{ maxWidth:380, color:'var(--text-secondary)', animationDelay:'80ms', fontWeight:300 }}
+            className="page-reveal mt-3 text-[13.5px] leading-5"
+            style={{ maxWidth:300, color:'var(--text-muted)', animationDelay:'80ms', fontWeight:400 }}
           >
             {s.body}
           </p>
-          <div className="mt-9 flex flex-wrap items-center gap-6">
+          <div className="mt-6 flex flex-wrap items-center gap-5">
             <Btn variant="primary" onClick={() => goto(s.action)}>
               {s.cta}
             </Btn>
             <button
               onClick={() => wa(`Hello Apple Guru. I am interested in ${s.tag}.`)}
-              className="group flex items-center gap-1 text-[15px] font-medium transition-colors"
+              className="group flex items-center gap-1 text-[13px] font-medium transition-colors"
               style={{ color:'var(--blue-bright)' }}
             >
               {t('hero.askUs')}
-              <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
             </button>
           </div>
         </div>
 
         {/* Controls — minimal, pinned to the bottom */}
-        <div className="mt-10 flex items-center gap-5">
+        <div className="mt-8 flex items-center gap-5">
           <button
             onClick={()=>setPlaying(v=>!v)}
             aria-label={playing ? 'Pause' : 'Play'}
