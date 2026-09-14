@@ -340,34 +340,34 @@ function Ticker() {
 // ── Campaign Hero ─────────────────────────────────────────────────────────────
 type Slide = {
   tag: string; title: string; accent: string;
-  body: string; cta: string; img: string;
+  body: string; cta: string; img: string; word: string; callout: string;
   action: 'phones'|'exchange'|'repair'|'showroom';
 };
 const slides: Slide[] = [
   {
     tag:'iPhone 17 Series', title:'The new Pro Max.', accent:'Titanium. Intelligence.',
     body:'Original iPhones with genuine warranty. Expert guidance at Chitwan\'s most trusted store.',
-    cta:'Explore iPhones', img: imgHero1, action:'phones'
+    cta:'Explore iPhones', img: imgHero1, word:'IPHONE', callout:'In showroom now', action:'phones'
   },
   {
     tag:'Samsung Galaxy S26 Ultra', title:'Galaxy at its peak.', accent:'Engineered to exceed.',
     body:'The full Galaxy lineup — from S26 Ultra to Z Fold 7 — in stock at our showroom.',
-    cta:'See Galaxy', img: imgHero2, action:'phones'
+    cta:'See Galaxy', img: imgHero2, word:'GALAXY', callout:'Full lineup in stock', action:'phones'
   },
   {
     tag:'Galaxy Z Fold 7', title:'Unfold a bigger world.', accent:'Fold. Work. Create.',
     body:'The most capable foldable yet. Try it in your hands at Apple Guru Chitwan.',
-    cta:'View Foldables', img: imgHero3, action:'phones'
+    cta:'View Foldables', img: imgHero3, word:'FOLD', callout:'Try it in-store', action:'phones'
   },
   {
     tag:'Phone Exchange', title:'Your old phone has value.', accent:'Put it to work.',
     body:'Bring it in. We assess it honestly. The amount comes straight off your next device.',
-    cta:'Start exchange', img: imgExchange, action:'exchange'
+    cta:'Start exchange', img: imgExchange, word:'TRADE', callout:'Get an instant estimate', action:'exchange'
   },
   {
     tag:'Repair', title:'Broken screen?', accent:"We've fixed worse.",
     body:'Screen, battery, charging port — diagnosed and repaired by technicians who care.',
-    cta:'Book a repair', img: imgRepair, action:'repair'
+    cta:'Book a repair', img: imgRepair, word:'REPAIR', callout:'Same-day service', action:'repair'
   },
 ];
 
@@ -445,6 +445,28 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
       {/* Bottom fade */}
       <div className="absolute inset-0" style={{ background:'linear-gradient(to top,var(--bg) 0%,transparent 32%)' }} />
 
+      {/* Oversized bleeding background wordmark — poster-style typographic
+          accent, purely typographic (no imagery), sits behind everything */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 select-none overflow-hidden" aria-hidden="true">
+        <span
+          key={`word-${idx}`}
+          className="page-reveal block font-serif"
+          style={{
+            fontSize:'clamp(6rem,18vw,15rem)',
+            fontWeight:800,
+            lineHeight:.82,
+            letterSpacing:'-.04em',
+            color:'transparent',
+            WebkitTextStroke:'1.5px var(--border-hover)',
+            marginLeft:'-0.02em',
+            whiteSpace:'nowrap',
+            paddingTop:8,
+          }}
+        >
+          {s.word}
+        </span>
+      </div>
+
       {/* Content */}
       <div className="relative mx-auto flex flex-col px-6 md:px-14 max-w-[1440px]"
         style={{ minHeight:'min(760px,94dvh)', paddingTop:64, paddingBottom:44 }}>
@@ -452,10 +474,15 @@ function Hero({ goto }: { goto: (p: PageView) => void }) {
         {/* Text cluster — grouped and vertically centered, like Apple's own
             hero banners, instead of being spread across the full height */}
         <div className="flex flex-1 flex-col justify-center" style={{ maxWidth:620 }}>
-          {/* Eyebrow */}
-          <span key={`tag-${idx}`} className="page-reveal text-[13px] font-medium tracking-[.14em] uppercase" style={{ color:'var(--blue-bright)' }}>
-            {s.tag}
-          </span>
+          {/* Eyebrow + callout */}
+          <div key={`tag-${idx}`} className="page-reveal flex flex-wrap items-center gap-2.5">
+            <span className="text-[13px] font-medium tracking-[.14em] uppercase" style={{ color:'var(--blue-bright)' }}>
+              {s.tag}
+            </span>
+            <span className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold" style={{ background:'var(--blue-dim)', color:'var(--blue-bright)' }}>
+              {s.callout}
+            </span>
+          </div>
 
           {/* Headline */}
           <h1
