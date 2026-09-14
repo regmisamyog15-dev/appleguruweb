@@ -108,17 +108,40 @@ function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const isDark = theme === 'dark';
   return (
-    <button
-      onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-      title={isDark ? 'Light mode' : 'Dark mode'}
-      className="grid place-items-center rounded-full p-2 transition-all"
-      style={{ border:'1px solid var(--border-hover)', color:'var(--text-secondary)', background:'var(--bg-raised)' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)'; (e.currentTarget as HTMLElement).style.color='var(--text-primary)'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-hover)'; (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'; }}
-    >
-      {isDark ? <Sun size={15} /> : <Moon size={15} />}
-    </button>
+    <div className="group relative">
+      {/* Hint label — shown above the button on hover, only nudging toward dark mode */}
+      {!isDark && (
+        <span
+          className="pointer-events-none absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-md px-2.5 py-1 text-[11px] font-medium opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          style={{ background:'var(--text-primary)', color:'var(--bg)' }}
+        >
+          Click to switch to dark
+        </span>
+      )}
+      <button
+        onClick={() => setTheme(isDark ? 'light' : 'dark')}
+        aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+        title={isDark ? 'Light mode' : 'Dark mode'}
+        className="relative grid place-items-center rounded-full p-2 transition-all"
+        style={{ border:'1px solid var(--border-hover)', color:'var(--text-secondary)', background:'var(--bg-raised)' }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)'; (e.currentTarget as HTMLElement).style.color='var(--text-primary)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-hover)'; (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'; }}
+      >
+        {isDark ? <Sun size={15} /> : <Moon size={15} />}
+        {/* Glowing red ping — draws the eye toward the toggle while light mode is active */}
+        {!isDark && (
+          <span
+            className="absolute -right-0.5 -top-0.5 rounded-full"
+            style={{
+              width:8, height:8,
+              background:'#ff3b30',
+              boxShadow:'0 0 6px 2px rgba(255,59,48,.75)',
+              animation:'glow-pulse 1.8s ease-in-out infinite',
+            }}
+          />
+        )}
+      </button>
+    </div>
   );
 }
 
