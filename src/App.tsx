@@ -1706,6 +1706,76 @@ function HomePage({ goto }: { goto:(p:PageView)=>void }) {
 }
 
 // ── App shell ─────────────────────────────────────────────────────────────────
+function DarkModeNudge() {
+  const { theme, setTheme } = useTheme();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    if (theme !== 'dark') { setVisible(false); return; }
+    let dismissed = false;
+    try { dismissed = localStorage.getItem('ag-theme-nudge-dismissed') === '1'; } catch { /* noop */ }
+    if (dismissed) return;
+    const timer = setTimeout(() => setVisible(true), 3000);
+    return () => clearTimeout(timer);
+  }, [theme]);
+
+  const dismiss = () => {
+    setVisible(false);
+    try { localStorage.setItem('ag-theme-nudge-dismissed', '1'); } catch { /* noop */ }
+  };
+
+  return (
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          initial={{ opacity:0, y:20, scale:.96 }}
+          animate={{ opacity:1, y:0, scale:1 }}
+          exit={{ opacity:0, y:12, scale:.97 }}
+          transition={{ duration:.35, ease:[0.16,1,0.3,1] }}
+          className="fixed bottom-20 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-2xl border p-5 md:bottom-6 md:left-auto md:right-6 md:translate-x-0"
+          style={{ background:'var(--bg-card)', borderColor:'var(--border)', boxShadow:'0 16px 40px rgba(0,0,0,.35)' }}
+        >
+          <button
+            onClick={dismiss}
+            aria-label="Dismiss"
+            className="absolute right-3 top-3"
+            style={{ color:'var(--text-muted)' }}
+          >
+            <X size={15} />
+          </button>
+          <div className="flex items-start gap-3 pr-5">
+            <div className="mt-0.5 grid shrink-0 place-items-center rounded-full" style={{ width:32, height:32, background:'var(--blue-dim)' }}>
+              <Sun size={15} style={{ color:'var(--blue-bright)' }} />
+            </div>
+            <div>
+              <p className="text-[14px] font-medium" style={{ color:'var(--text-primary)' }}>Prefer it brighter?</p>
+              <p className="mt-1 text-[13px] leading-5" style={{ color:'var(--text-secondary)' }}>
+                You're browsing in dark mode. Switch to light anytime — it's always your choice.
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 flex gap-2 pl-11">
+            <button
+              onClick={() => { setTheme('light'); dismiss(); }}
+              className="btn btn-primary"
+              style={{ minHeight:36, padding:'0 16px', fontSize:13 }}
+            >
+              Switch to light
+            </button>
+            <button
+              onClick={dismiss}
+              className="btn"
+              style={{ minHeight:36, padding:'0 16px', fontSize:13, color:'var(--text-secondary)' }}
+            >
+              Keep dark
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 function AppContent() {
   useScrollReveal();
   const [page,            setPage]            = useState<PageView>('home');
@@ -1774,6 +1844,7 @@ function AppContent() {
       </AnimatePresence>
       {page!=='home' && <Footer goto={goto} />}
       <BottomNav />
+      <DarkModeNudge />
 
       <ProductModal
         product={selectedProduct}
