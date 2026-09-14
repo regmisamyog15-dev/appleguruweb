@@ -1761,7 +1761,7 @@ function DarkModeNudge() {
   useEffect(() => {
     if (theme !== 'dark') { setVisible(false); return; }
     let dismissed = false;
-    try { dismissed = localStorage.getItem('ag-theme-nudge-dismissed') === '1'; } catch { /* noop */ }
+    try { dismissed = sessionStorage.getItem('ag-theme-nudge-dismissed') === '1'; } catch { /* noop */ }
     if (dismissed) return;
     const timer = setTimeout(() => setVisible(true), 3000);
     return () => clearTimeout(timer);
@@ -1769,7 +1769,7 @@ function DarkModeNudge() {
 
   const dismiss = () => {
     setVisible(false);
-    try { localStorage.setItem('ag-theme-nudge-dismissed', '1'); } catch { /* noop */ }
+    try { sessionStorage.setItem('ag-theme-nudge-dismissed', '1'); } catch { /* noop */ }
   };
 
   return (
