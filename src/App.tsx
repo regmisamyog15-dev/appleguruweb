@@ -122,12 +122,13 @@ function ThemeToggle() {
         onClick={() => setTheme(isDark ? 'light' : 'dark')}
         aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
         title={isDark ? 'Light mode' : 'Dark mode'}
-        className="relative grid place-items-center rounded-full p-2 transition-all"
+        className="relative flex items-center gap-1.5 rounded-full px-3 py-2 transition-all"
         style={{ border:'1px solid var(--border-hover)', color:'var(--text-secondary)', background:'var(--bg-raised)' }}
         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--blue-bright)'; (e.currentTarget as HTMLElement).style.color='var(--text-primary)'; }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-hover)'; (e.currentTarget as HTMLElement).style.color='var(--text-secondary)'; }}
       >
         {isDark ? <Sun size={15} /> : <Moon size={15} />}
+        <span className="text-[13px]">{isDark ? 'Dark' : 'Light'}</span>
         {/* Glowing red ping — draws the eye toward the toggle while light mode is active */}
         {!isDark && (
           <span
